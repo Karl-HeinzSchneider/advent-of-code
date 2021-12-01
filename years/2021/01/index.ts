@@ -13,7 +13,32 @@ const DAY = 1;
 // problem url  : https://adventofcode.com/2021/day/1
 
 async function p2021day1_part1(input: string, ...params: any[]) {
-	return "Not implemented";
+
+	// string => number[]
+	const arr = input.split('\n').map(item => Number(item));
+	const length = arr.length;
+	if (length < 2) {
+		return 0
+	}
+
+	// first
+	let prev = arr[0];
+	let count = 0;
+
+	for (let i = 1; i < length; i++) {
+		const m = arr[i];
+		if (m > prev) {
+			count = count + 1;
+			//console.log(`${m}: > ${prev}`)
+		}
+		else {
+			//console.log(`${m}: < ${prev}`)
+		}
+
+		prev = m;
+	}
+
+	return count;
 }
 
 async function p2021day1_part2(input: string, ...params: any[]) {
@@ -21,7 +46,21 @@ async function p2021day1_part2(input: string, ...params: any[]) {
 }
 
 async function run() {
-	const part1tests: TestCase[] = [];
+	const part1tests: TestCase[] = [
+		{
+			input: `199
+				200
+				208
+				210
+				200
+				207
+				240
+				269
+				260
+				263`,
+			expected: "7"
+		}
+	];
 	const part2tests: TestCase[] = [];
 
 	// Run tests
