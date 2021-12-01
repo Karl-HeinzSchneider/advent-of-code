@@ -42,7 +42,32 @@ async function p2021day1_part1(input: string, ...params: any[]) {
 }
 
 async function p2021day1_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	// string => number[]
+	const arr = input.split('\n').map(item => Number(item));
+	const length = arr.length;
+	if (length < 3) {
+		return 0
+	}
+
+	// first
+	let prev = arr[0] + arr[1] + arr[2];
+	let count = 0;
+
+	for (let i = 1; i < length - 2; i++) {
+		const sum = arr[i] + arr[i + 1] + arr[i + 2];
+		if (sum > prev) {
+			count = count + 1;
+			//console.log(`${sum}: > ${prev}`)
+		}
+		else {
+			//console.log(`${sum}: < ${prev}`)
+		}
+
+		prev = sum;
+	}
+
+	return count;
+
 }
 
 async function run() {
@@ -61,7 +86,21 @@ async function run() {
 			expected: "7"
 		}
 	];
-	const part2tests: TestCase[] = [];
+	const part2tests: TestCase[] = [
+		{
+			input: `199
+				200
+				208
+				210
+				200
+				207
+				240
+				269
+				260
+				263`,
+			expected: "5"
+		}
+	];
 
 	// Run tests
 	test.beginTests();
