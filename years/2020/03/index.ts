@@ -76,8 +76,47 @@ async function p2020day3_part1(input: string, ...params: any[]) {
 	return treeCounter;
 }
 
+function checkSlope(arr: string[], startX: number, startY: number, deltaX: number, deltaY: number): number {
+	const sizeX = arr[0].length;
+	const sizeY = arr.length;
+
+	// start
+	let x = startX;
+	let y = startY;
+
+	let treeCounter = 0;
+
+	while (y < sizeY) {
+		if (hasTreeAtCoords(x, y, arr, sizeX, sizeY)) {
+			treeCounter = treeCounter + 1;
+		}
+
+		x = x + deltaX;
+		y = y + deltaY;
+	}
+
+	return treeCounter;
+}
+
 async function p2020day3_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	const arr = input.split('\n');
+
+	const slopeArray = [
+		{ dx: 1, dy: 1 },
+		{ dx: 3, dy: 1 },
+		{ dx: 5, dy: 1 },
+		{ dx: 7, dy: 1 },
+		{ dx: 1, dy: 2 }
+	];
+
+	let product = 1;
+
+	slopeArray.forEach(slope => {
+		const trees = checkSlope(arr, 0, 0, slope.dx, slope.dy);
+		product = product * trees;
+	})
+
+	return product;
 }
 
 async function run() {
@@ -87,7 +126,12 @@ async function run() {
 			expected: '7'
 		}
 	];
-	const part2tests: TestCase[] = [];
+	const part2tests: TestCase[] = [
+		{
+			input: testString1,
+			expected: '336'
+		}
+	];
 
 	// Run tests
 	test.beginTests();
@@ -102,7 +146,7 @@ async function run() {
 		}
 	});
 	test.endTests();
-	
+
 	// Get input and run program while measuring performance
 	const input = await util.getInput(DAY, YEAR);
 
