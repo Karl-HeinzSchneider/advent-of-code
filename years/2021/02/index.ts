@@ -84,7 +84,27 @@ async function p2021day2_part1(input: string, ...params: any[]) {
 }
 
 async function p2021day2_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	const arr = convert(input);
+	//console.log(arr);
+
+	let horizontal = 0;
+	let depth = 0;
+	let aim = 0;
+
+	arr.forEach(entry => {
+		if (entry.type === 'forward') {
+			horizontal = horizontal + entry.value;
+			depth = depth + aim * entry.value;
+		}
+		else if (entry.type === 'up') {
+			aim = aim - entry.value;
+		}
+		else if (entry.type === 'down') {
+			aim = aim + entry.value;
+		}
+	})
+
+	return horizontal * depth;
 }
 
 async function run() {
@@ -94,7 +114,12 @@ async function run() {
 			expected: "150"
 		}
 	];
-	const part2tests: TestCase[] = [];
+	const part2tests: TestCase[] = [
+		{
+			input: example,
+			expected: "900"
+		}
+	];
 
 	// Run tests
 	test.beginTests();
