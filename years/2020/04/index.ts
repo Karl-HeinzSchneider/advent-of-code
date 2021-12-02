@@ -12,8 +12,88 @@ const DAY = 4;
 // data path    : C:\Users\Johannes\advent-of-code\years\2020\04\data.txt
 // problem url  : https://adventofcode.com/2020/day/4
 
+const example = `ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
+byr:1937 iyr:2017 cid:147 hgt:183cm
+
+iyr:2013 ecl:amb cid:350 eyr:2023 pid:028048884
+hcl:#cfa07d byr:1929
+
+hcl:#ae17e1 iyr:2013
+eyr:2024
+ecl:brn pid:760753108 byr:1931
+hgt:179cm
+
+hcl:#cfa07d eyr:2025 pid:166559648
+iyr:2011 ecl:brn hgt:59in`
+
+function convert(input: string) {
+	const arr = input.split('\n');
+
+	let newArr: string[][] = [];
+	//console.log(arr)
+
+	let start = 0;
+
+	arr.forEach((value, index, array) => {
+		if (value === '') {
+			const ppRaw = arr.slice(start, index);
+
+			let pp: string[] = [];
+
+			ppRaw.forEach(entry => {
+				const splits = entry.split(' ');
+				pp = [...pp, ...splits];
+			})
+			newArr.push(pp);
+
+			start = index + 1;
+		}
+		else if (index === arr.length - 1) {
+			const ppRaw = arr.slice(start);
+
+			let pp: string[] = [];
+
+			ppRaw.forEach(entry => {
+				const splits = entry.split(' ');
+				pp = [...pp, ...splits];
+			})
+			newArr.push(pp);
+		}
+	})
+
+	return newArr;
+}
+
+function checkPassport(pp: string[]): boolean {
+
+	const requiredFields = ['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid'];
+	const optionalFields = ['cid'];
+
+	for (let i = 0; i < requiredFields.length; i++) {
+		const field = requiredFields[i];
+		if (!pp.some(entry => entry.startsWith(field))) {
+			//console.log('INVALID -> ' + field);
+			return false;
+		}
+	}
+
+	return true;
+}
+
 async function p2020day4_part1(input: string, ...params: any[]) {
-	return "Not implemented";
+	const ppArr = convert(input);
+	//console.log(ppArr)
+
+	let counter = 0;
+
+	ppArr.forEach(pp => {
+		if (checkPassport(pp)) {
+			counter = counter + 1;
+		}
+	})
+
+
+	return counter;
 }
 
 async function p2020day4_part2(input: string, ...params: any[]) {
@@ -21,7 +101,12 @@ async function p2020day4_part2(input: string, ...params: any[]) {
 }
 
 async function run() {
-	const part1tests: TestCase[] = [];
+	const part1tests: TestCase[] = [
+		{
+			input: example,
+			expected: '2'
+		}
+	];
 	const part2tests: TestCase[] = [];
 
 	// Run tests
