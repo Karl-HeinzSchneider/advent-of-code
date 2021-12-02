@@ -75,7 +75,32 @@ async function p2020day2_part1(input: string, ...params: any[]) {
 }
 
 async function p2020day2_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	const arr = convert(input);
+
+	let validCount = 0;
+
+	arr.forEach(entry => {
+
+		let count = 0;
+
+		const first = entry.pw.charAt(entry.min - 1);
+		const second = entry.pw.charAt(entry.max - 1);
+
+		if (first === entry.char) {
+			count = count + 1;
+		}
+
+		if (second === entry.char) {
+			count = count + 1;
+		}
+
+		if (count === 1) {
+			validCount = validCount + 1;
+		}
+
+	})
+
+	return validCount;
 }
 
 async function run() {
@@ -85,7 +110,12 @@ async function run() {
 		2-9 c: ccccccccc`,
 		expected: "2"
 	}];
-	const part2tests: TestCase[] = [];
+	const part2tests: TestCase[] = [{
+		input: `1-3 a: abcde
+		1-3 b: cdefg
+		2-9 c: ccccccccc`,
+		expected: "1"
+	}];
 
 	// Run tests
 	test.beginTests();
