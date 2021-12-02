@@ -32,7 +32,29 @@ async function p2020day1_part1(input: string, ...params: any[]) {
 }
 
 async function p2020day1_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	const arr = input.split('\n').map(Number);
+	const length = arr.length;
+	const target = 2020;
+
+	const lookup = new Set(arr);
+
+	for (let i = 0; i < length; i++) {
+		const item = arr[i];
+		const newTarget = target - item;
+		const outerComplement = target - newTarget;
+
+		for (let j = i; j < length; j++) {
+			const innerItem = arr[j];
+			const complement = newTarget - innerItem;
+
+			if (lookup.has(complement)) {
+				return (item * innerItem * complement);
+			}
+		}
+	}
+
+	// not found -> error
+	return -1;
 }
 
 async function run() {
@@ -47,7 +69,17 @@ async function run() {
 			expected: '514579'
 		}
 	];
-	const part2tests: TestCase[] = [];
+	const part2tests: TestCase[] = [
+		{
+			input: `1721
+			979
+			366
+			299
+			675
+			1456`,
+			expected: '241861950'
+		}
+	];
 
 	// Run tests
 	test.beginTests();
@@ -62,7 +94,7 @@ async function run() {
 		}
 	});
 	test.endTests();
-	
+
 	// Get input and run program while measuring performance
 	const input = await util.getInput(DAY, YEAR);
 
