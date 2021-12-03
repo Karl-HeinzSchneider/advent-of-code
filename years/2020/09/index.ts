@@ -13,10 +13,47 @@ const DAY = 9;
 // problem url  : https://adventofcode.com/2020/day/9
 
 async function p2020day9_part1(input: string, ...params: any[]) {
-	return "Not implemented";
+
+	const arr = input.split('\n').map(entry => Number(entry));
+	const inputLength = arr.length;
+
+	const preambleLength = 25;
+
+	let last25 = arr.slice(0, preambleLength);
+
+	console.log(last25.length);
+
+	for (let i = preambleLength; i < inputLength; i++) {
+		const newNumber = arr[i];
+		// check if Valid
+		let isValid = false;
+
+		for (let j = 0; j < preambleLength; j++) {
+			const testNumber = last25[j];
+			const complement = newNumber - testNumber;
+
+			if (last25.includes(complement)) {
+				isValid = true;
+				break;
+			}
+		}
+
+		if (!isValid) {
+			console.log('NOT VALID: ' + newNumber + ' | i=' + i);
+			return newNumber;
+		}
+
+		last25 = last25.slice(1);
+		last25.push(newNumber);
+	}
+
+
+	return -1;
 }
 
 async function p2020day9_part2(input: string, ...params: any[]) {
+	// from Part 1
+	const magicNumber = 400480901;
 	return "Not implemented";
 }
 
