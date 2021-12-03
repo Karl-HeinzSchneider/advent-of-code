@@ -52,9 +52,41 @@ async function p2020day9_part1(input: string, ...params: any[]) {
 }
 
 async function p2020day9_part2(input: string, ...params: any[]) {
+	const arr = input.split('\n').map(entry => Number(entry));
+	const inputLength = arr.length;
+
+	const preambleLength = 25;
+
 	// from Part 1
 	const magicNumber = 400480901;
-	return "Not implemented";
+
+	for (let i = 0; i < inputLength; i++) {
+
+		let counter = arr[i];
+		let counterList: number[] = []
+		counterList.push(counter);
+
+		for (let j = i + 1; j < inputLength; j++) {
+			const newNumber = arr[j];
+
+			counter = counter + newNumber;
+			counterList.push(newNumber);
+
+			if (counter === magicNumber) {
+				console.log(counterList);				
+
+				counterList.sort((a, b) => a - b);
+
+				const sum = counterList[0] + counterList[counterList.length - 1];
+				return sum;
+			}
+			else if (counter > magicNumber) {
+				break;
+			}
+		}
+	}
+
+	return -1;
 }
 
 async function run() {
