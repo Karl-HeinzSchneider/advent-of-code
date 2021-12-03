@@ -12,8 +12,104 @@ const DAY = 11;
 // data path    : C:\Users\Johannes\advent-of-code\years\2020\11\data.txt
 // problem url  : https://adventofcode.com/2020/day/11
 
+function getTile(arr: string[], x: number, y: number): string {
+
+	const yMin = 0
+	const yMax = arr.length - 1;
+
+	const xMin = 0;
+	const xMax = arr[0].length - 1;
+
+	const lookupX = _.clamp(x, xMin, xMax);
+	const lookupY = _.clamp(y, yMin, yMax);
+
+	return arr[y].charAt(x) ? arr[y].charAt(x) : '.';
+
+}
+
+function getNumberOfNeighbourSeatsOccupied(arr: string[], x: number, y: number): number {
+	let counter = 0;
+
+	// upper
+	if (getTile(arr, x - 1, y - 1) === '#') {
+		counter = counter + 1;
+	}
+	if (getTile(arr, x, y - 1) === '#') {
+		counter = counter + 1;
+	}
+	if (getTile(arr, x + 1, y - 1) === '#') {
+		counter = counter + 1;
+	}
+
+	// mid
+	if (getTile(arr, x - 1, y) === '#') {
+		counter = counter + 1;
+	}
+	if (getTile(arr, x + 1, y) === '#') {
+		counter = counter + 1;
+	}
+
+	// lower
+	if (getTile(arr, x - 1, y + 1) === '#') {
+		counter = counter + 1;
+	}
+	if (getTile(arr, x - 1, y + 1) === '#') {
+		counter = counter + 1;
+	}
+	if (getTile(arr, x - 1, y + 1) === '#') {
+		counter = counter + 1;
+	}
+
+	return counter;
+}
+function computeNewGeneration(arr: string[]): [generation: string[], changes: number] {
+
+	let newGeneration: string[] = arr;
+	const xMax = arr[0].length;
+	const yMax = arr.length;
+
+	let changeCounter = 0;
+
+	for (let i = 0; i < xMax; i++) {
+		for (let j = 0; j < yMax; j++) {
+			const tile = getTile(arr, i, j);
+			// floor -> do nothing
+			if (tile === '.') {
+
+			}
+			// empty
+			else if (tile === 'L') {
+				const occupiedNeighbors = getNumberOfNeighbourSeatsOccupied(arr, i, j);
+				if(occupiedNeighbors === 0){
+					
+				}
+			}
+			// occupied
+			else if (tile === '#') {
+
+			}
+		}
+	}
+
+	return [newGeneration, changeCounter];
+}
+
 async function p2020day11_part1(input: string, ...params: any[]) {
-	return "Not implemented";
+	const arr = input.split('\n');
+
+	for (let i = 0; i < 10; i++) {
+		//console.log(getTile(arr,i,8));
+	}
+
+
+	let generation: string[] = arr;
+	let changes = -1;
+
+	while (changes != 0) {
+		[generation, changes] = computeNewGeneration(generation);
+	}
+
+	return -1;
 }
 
 async function p2020day11_part2(input: string, ...params: any[]) {
