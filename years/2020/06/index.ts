@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _, { map } from "lodash";
 import * as util from "../../../util/util";
 import * as test from "../../../util/test";
 import chalk from "chalk";
@@ -44,11 +44,11 @@ async function p2020day6_part1(input: string, ...params: any[]) {
 	arr.forEach(grp => {
 		let answers = new Set<string>();
 
-		grp.forEach(member => {			
-			for(let i = 0; i < member.length; i++){
+		grp.forEach(member => {
+			for (let i = 0; i < member.length; i++) {
 				answers.add(member.charAt(i));
 			}
-			
+
 		})
 
 		count = count + answers.size;
@@ -59,7 +59,49 @@ async function p2020day6_part1(input: string, ...params: any[]) {
 }
 
 async function p2020day6_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	const arr = convert(input);
+	//console.log(arr)
+
+	let count = 0;
+
+	arr.forEach(grp => {
+		let answers = new Map<string, number>();
+
+		grp.forEach(member => {
+			for (let i = 0; i < member.length; i++) {
+				const char = member.charAt(i);
+
+				const charMap = answers.get(char);
+
+				if (charMap) {
+					const newCount = charMap + 1;
+
+					answers.set(char, newCount);
+				}
+				else {
+					answers.set(char, 1);
+				}
+			}
+
+		})
+
+		const memberCount = grp.length;
+		let memberAgree = 0;
+
+		for (let value of answers.values()) {
+			if (value === memberCount) {
+				memberAgree = memberAgree + 1;
+			}
+		}
+		count = count + memberAgree;
+
+		console.log(answers);
+
+
+		//console.log(answers);
+	})
+
+	return count;
 }
 
 async function run() {
