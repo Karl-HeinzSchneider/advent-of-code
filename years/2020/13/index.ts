@@ -13,7 +13,34 @@ const DAY = 13;
 // problem url  : https://adventofcode.com/2020/day/13
 
 async function p2020day13_part1(input: string, ...params: any[]) {
-	return "Not implemented";
+	const arr = input.split('\n');
+	const timestamp = Number(arr[0]);
+
+	const busArray = arr[1].split(',').filter(bus => bus != 'x').map(Number).sort((a, b) => a - b);
+
+	const maxValue = _.max(busArray);
+
+	let busNr = 0;
+	let timestampLoop = timestamp;
+	let wait = 0;
+
+	while (busNr === 0) {
+		busArray.forEach(bus => {
+			if (timestampLoop % bus === 0) {
+				busNr = bus;
+				wait = timestampLoop - timestamp;
+			}
+		})
+
+		timestampLoop = timestampLoop + 1;
+	}
+
+	console.log(timestamp, busArray, maxValue);
+
+	console.log(timestampLoop - 1, busNr, wait);
+
+
+	return wait * busNr;
 }
 
 async function p2020day13_part2(input: string, ...params: any[]) {
