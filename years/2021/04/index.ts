@@ -42,6 +42,8 @@ class Board {
 
 	public marked: Set<number> = new Set();
 
+	public hasWon: boolean = false;
+
 	constructor(numbers: number[]) {
 		this.gridNumbers = numbers;
 	}
@@ -63,11 +65,13 @@ class Board {
 		//console.log(number, '->', row, column);
 		const rowFinished = this.checkRow(row);
 		if (rowFinished) {
+			this.hasWon = true;
 			return true;
 		}
 
 		const columnFinished = this.checkColumn(column);
 		if (columnFinished) {
+			this.hasWon = true;
 			return true;
 		}
 
@@ -149,6 +153,48 @@ async function p2021day4_part1(input: string, ...params: any[]) {
 }
 
 async function p2021day4_part2(input: string, ...params: any[]) {
+	const data = convert(input);
+
+	const bingoNumbers = data.numbers;
+	const boards = data.boards.map(entry => {
+		const board = new Board(entry);
+		return board;
+	});
+
+	//console.log(bingoNumbers);
+	console.log(boards[0].gridNumbers);
+
+	interface winner {
+		board: Board,
+		lastNumber: number,
+		score: number
+	}
+	let winnerArr: winner[] = [];
+
+	for (let i = 0; i < bingoNumbers.length; i++) {
+		const newNumber = bingoNumbers[i];
+
+		for (let j = 0; j < boards.length; j++) {
+			const board = boards[j];
+
+			if (!board.hasWon) {
+				const winning = board.mark(newNumber);
+				if (winning) {
+					//console.log('WINNING');
+					const score = board.calculateScore(newNumber);
+					//console.log(newNumber)
+					//console.log(board.gridNumbers);
+					//console.log(Array.from(board.marked).sort((a, b) => a - b));
+					//console.log(j)
+					//return score;
+					winnerArr.push({ board: board, lastNumber: newNumber, score: score })
+				}
+			}
+		}
+	}
+
+	return winnerArr[winnerArr.length - 1].score;
+
 	return "Not implemented";
 }
 
