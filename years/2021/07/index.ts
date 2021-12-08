@@ -13,7 +13,25 @@ const DAY = 7;
 // problem url  : https://adventofcode.com/2021/day/7
 
 async function p2021day7_part1(input: string, ...params: any[]) {
-	return "Not implemented";
+	const arr = input.split(',').map(Number);
+	const max = _.max(arr)!;
+	console.log('crabs: ' + arr.length + ' | max: ' + max);
+
+	let minimum = Infinity;
+
+	for (let i = 1; i < max; i++) {
+		let fuel = 0;
+
+		arr.forEach(crab => {
+			fuel = fuel + Math.abs(i - crab);
+		})
+
+		if(fuel < minimum){
+			minimum = fuel;
+		}
+	}
+
+	return minimum;
 }
 
 async function p2021day7_part2(input: string, ...params: any[]) {
