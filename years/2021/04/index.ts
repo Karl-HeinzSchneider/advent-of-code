@@ -23,11 +23,11 @@ function convert(input: string) {
 	let boards: number[][] = [];
 
 	for (let i = 0; i < length / 6; i++) {
-		const lineOne = newArr[i * 6 + 1].split(' ').map(Number);
-		const lineTwo = newArr[i * 6 + 2].split(' ').map(Number);
-		const lineThree = newArr[i * 6 + 3].split(' ').map(Number);
-		const lineFour = newArr[i * 6 + 4].split(' ').map(Number);
-		const lineFive = newArr[i * 6 + 5].split(' ').map(Number);
+		const lineOne = newArr[i * 6 + 1].split(' ').filter(entry => entry != '').map(Number);
+		const lineTwo = newArr[i * 6 + 2].split(' ').filter(entry => entry != '').map(Number);
+		const lineThree = newArr[i * 6 + 3].split(' ').filter(entry => entry != '').map(Number);
+		const lineFour = newArr[i * 6 + 4].split(' ').filter(entry => entry != '').map(Number);
+		const lineFive = newArr[i * 6 + 5].split(' ').filter(entry => entry != '').map(Number);
 
 		const board = [...lineOne, ...lineTwo, ...lineThree, ...lineFour, ...lineFive];
 		boards.push(board);
@@ -36,27 +36,77 @@ function convert(input: string) {
 	return { numbers: bingoNumbers, boards: boards };
 }
 
-function checkBoard(numbers: number[], board: number[]): boolean {
 
-	const sorted = numbers.sort((a, b) => a - b);
+class Board {
+	public gridNumbers: number[] = [];
 
+	public marked: Set<number> = new Set();
 
-	for (let i = 0; i < 5; i++) {
-		const lineSorted = board.slice(i, i + 5).sort((a, b) => a - b);
-		if (lineSorted === sorted) {
-			return true;
-		}
-
-		const columnSorted = [board[i], board[i + 5], board[i + 10], board[i + 15], board[i + 20]].sort((a, b) => a - b);
-
-		if (columnSorted === sorted) {
-			return true;
-		}
-		//console.log(sorted, lineSorted, columnSorted);
-
+	constructor(numbers: number[]) {
+		this.gridNumbers = numbers;
 	}
 
-	return false;
+	public mark(number: number): boolean {
+		this.marked.add(number);
+
+		if (this.marked.size < 5) {
+			//return false;
+		}
+
+		const index = this.gridNumbers.findIndex(num => num === number);
+		if (index < 0) {
+			return false;
+		}
+
+		const column = index % 5;
+		const row = (index - column) / 5;
+		//console.log(number, '->', row, column);
+		const rowFinished = this.checkRow(row);
+		if (rowFinished) {
+			return true;
+		}
+
+		const columnFinished = this.checkColumn(column);
+		if (columnFinished) {
+			return true;
+		}
+
+		return false;
+	}
+
+	checkRow(row: number): boolean {
+
+		for (let i = 0; i < 5; i++) {
+			if (!this.marked.has(this.gridNumbers[i + row * 5])) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	checkColumn(column: number): boolean {
+
+		for (let i = 0; i < 5; i++) {
+			if (!this.marked.has(this.gridNumbers[i * 5 + column])) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	calculateScore(lastNumber: number): number {
+		let sum = 0;
+
+		this.gridNumbers.forEach(num => {
+			if (!this.marked.has(num)) {
+				sum = sum + num;
+			}
+		})
+
+		return sum * lastNumber;
+	}
 }
 
 
@@ -64,19 +114,31 @@ async function p2021day4_part1(input: string, ...params: any[]) {
 	const data = convert(input);
 
 	const bingoNumbers = data.numbers;
-	const boards = data.boards;
+	const boards = data.boards.map(entry => {
+		const board = new Board(entry);
+		return board;
+	});
 
 	//console.log(bingoNumbers);
-	//console.log(boards[0]);
+	console.log(boards[0].gridNumbers);
 
-	for (let i = 4; i < bingoNumbers.length; i++) {
-		const draw = bingoNumbers.slice(0, i + 1);
 
-		for (let j = 0; j < 1; j++) {
+	for (let i = 0; i < bingoNumbers.length; i++) {
+		const newNumber = bingoNumbers[i];
+
+		for (let j = 0; j < boards.length; j++) {
 			const board = boards[j];
-			const winning = checkBoard(draw, board);
+			const winning = board.mark(newNumber);
+
+			//console.log(newNumber, board.marked.size)
 			if (winning) {
-				console.log(draw, j, board);
+				console.log('WINNING');
+				const score = board.calculateScore(newNumber);
+				console.log(newNumber)
+				console.log(board.gridNumbers);
+				console.log(Array.from(board.marked).sort((a, b) => a - b));
+				console.log(j)
+				return score;
 			}
 		}
 
