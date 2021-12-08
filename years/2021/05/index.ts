@@ -66,11 +66,66 @@ async function p2021day5_part1(input: string, ...params: any[]) {
 	})
 
 	const gridBigger = grid.filter(elem => elem >= 2);
-	return gridBigger.length;	
+	return gridBigger.length;
 }
 
 async function p2021day5_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	const arr = convert(input, false);
+
+	let grid = Array.from('0'.repeat(1000 * 1000)).map(Number);
+	//console.log(grid)	
+
+	arr.forEach(line => {
+		if (line.x1 === line.x2) {
+			const x = line.x1;
+			if (line.y1 > line.y2) {
+				for (let i = line.y1; i >= line.y2; i--) {
+					grid[x + 1000 * i] = grid[x + 1000 * i] + 1;
+				}
+			}
+			else if (line.y1 < line.y2) {
+				for (let i = line.y1; i <= line.y2; i++) {
+					grid[x + 1000 * i] = grid[x + 1000 * i] + 1;
+				}
+			}
+		}
+
+		else if (line.y1 === line.y2) {
+			const y = line.y1;
+			if (line.x1 > line.x2) {
+				for (let i = line.x1; i >= line.x2; i--) {
+					grid[i + 1000 * y] = grid[i + 1000 * y] + 1;
+				}
+			}
+			else if (line.x1 < line.x2) {
+				for (let i = line.x1; i <= line.x2; i++) {
+					grid[i + 1000 * y] = grid[i + 1000 * y] + 1;
+				}
+			}
+		}
+
+		// diagonal
+		else {
+			let dx = 1;
+			let dy = 1;
+
+			if (line.x1 > line.x2) {
+				dx = -1;
+			}
+			if (line.y1 > line.y2) {
+				dy = -1;
+			}
+
+			const count = Math.abs(line.x1 - line.x2);
+
+			for (let i = 0; i <= count; i++) {
+				grid[(line.x1 + i * dx) + 1000 * (line.y1 + i * dy)] = grid[(line.x1 + i * dx) + 1000 * (line.y1 + i * dy)] + 1;
+			}
+		}
+	})
+
+	const gridBigger = grid.filter(elem => elem >= 2);
+	return gridBigger.length;
 }
 
 async function run() {
