@@ -26,7 +26,7 @@ async function p2021day7_part1(input: string, ...params: any[]) {
 			fuel = fuel + Math.abs(i - crab);
 		})
 
-		if(fuel < minimum){
+		if (fuel < minimum) {
 			minimum = fuel;
 		}
 	}
@@ -34,8 +34,32 @@ async function p2021day7_part1(input: string, ...params: any[]) {
 	return minimum;
 }
 
+function gauss(num: number): number {
+	let sum = (num * num + num) / 2;
+	return sum
+}
+
 async function p2021day7_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	const arr = input.split(',').map(Number);
+	const max = _.max(arr)!;
+	console.log('crabs: ' + arr.length + ' | max: ' + max);
+
+	let minimum = Infinity;
+
+	for (let i = 1; i < max; i++) {
+		let fuel = 0;
+
+		arr.forEach(crab => {
+			const delta = Math.abs(i - crab);
+			fuel = fuel + gauss(delta);
+		})
+
+		if (fuel < minimum) {
+			minimum = fuel;
+		}
+	}
+
+	return minimum;
 }
 
 async function run() {
