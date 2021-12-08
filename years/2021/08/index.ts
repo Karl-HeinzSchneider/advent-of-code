@@ -12,6 +12,11 @@ const DAY = 8;
 // data path    : C:\Users\Johannes\advent-of-code\years\2021\08\data.txt
 // problem url  : https://adventofcode.com/2021/day/8
 
+function sortLetters(input: string): string {
+	const arr = input.split('');
+	return arr.sort((a, b) => a.localeCompare(b)).join('');
+}
+
 function convert(input: string) {
 	const lines = input.split('\n');
 
@@ -20,10 +25,10 @@ function convert(input: string) {
 
 	lines.forEach(line => {
 		const split = line.split('|')
-		const input = split[0].split(' ').filter(line => line != '');
+		const input = split[0].split(' ').filter(line => line != '').map(sortLetters);
 		inputs.push(input);
 
-		const output = split[1].split(' ').filter(line => line != '');
+		const output = split[1].split(' ').filter(line => line != '').map(sortLetters);
 		outputs.push(output);
 	})
 
@@ -67,7 +72,91 @@ async function p2021day8_part1(input: string, ...params: any[]) {
 	return sum;
 }
 
+// default decode
+const defaultDecoder = new Map<string, number>();
+defaultDecoder.set('abcefg', 0)
+defaultDecoder.set('cf', 1)
+defaultDecoder.set('acdeg', 2)
+defaultDecoder.set('acdfg', 3)
+defaultDecoder.set('bcdf', 4)
+defaultDecoder.set('abdfg', 5)
+defaultDecoder.set('abdefg', 6)
+defaultDecoder.set('acf', 7)
+defaultDecoder.set('abcdefg', 8)
+defaultDecoder.set('abcdfg', 9)
+
+
+function decode(str: string): number {
+	const nr = defaultDecoder.get(str);
+	if (!nr) {
+		return -1
+	}
+	return nr;
+}
+
+interface charPermut {
+	a: string,
+	b: string,
+	c: string,
+	d: string,
+	e: string,
+	f: string,
+	g: string
+}
+
+function translate(str: string, lang: charPermut): string {
+	let permutMap: Map<string, string> = new Map();
+	permutMap.set('a', lang.a);
+	permutMap.set('b', lang.b);
+	permutMap.set('c', lang.c);
+	permutMap.set('d', lang.d);
+	permutMap.set('e', lang.e);
+	permutMap.set('f', lang.f);
+	permutMap.set('g', lang.g);
+
+	const split = str.split('');
+	let newString = '';
+	split.forEach(part => {
+		const splitString = part.split('');
+
+		const newChar = permutMap.get(part);
+		newString = newString + newChar;
+	})
+
+	return newString;
+}
+
 async function p2021day8_part2(input: string, ...params: any[]) {
+	console.log(decode('abcdfg'));
+	console.log(decode('abcdfgss'));
+
+	const str = 'abcdfg';
+
+	const lang: charPermut = {
+		a: 'a',
+		b: 'b',
+		c: 'c',
+		d: 'd',
+		e: 'e',
+		f: 'f',
+		g: 'g'
+	}
+
+	//const trns = translate(str,lang);
+	console.log(decode(translate(str, lang)));
+
+	console.log(decode(translate('acedgfb', {
+		a: 'd',
+		b: 'e',
+		c: 'a',
+		d: 'f',
+		e: 'g',
+		f: 'b',
+		g: 'c'
+	})));
+
+
+
 	return "Not implemented";
 }
 
