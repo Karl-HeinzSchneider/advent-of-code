@@ -35,6 +35,31 @@ function convert(input: string) {
 	return [inputs, outputs];
 }
 
+function convertSet(input: string) {
+	const lines = input.split('\n');
+
+	let inputs: Set<string>[][] = [];
+	let outputs: Set<string>[][] = [];
+
+	lines.forEach(line => {
+		const split = line.split('|')
+		const input = split[0].split(' ').filter(line => line != '');
+		const inputSet = input.map(str => {
+			const chars = str.split('');
+			return new Set(chars);
+		});
+		inputs.push(inputSet);
+
+		const output = split[1].split(' ').filter(line => line != '');
+		const outputSet = output.map(str => {
+			const chars = str.split('');
+			return new Set(chars);
+		});
+		outputs.push(outputSet);
+	})
+	return [inputs, outputs];
+}
+
 // 0: abcefg  | 6
 // 1: cf	| 2
 // 2: acdeg | 5
@@ -50,12 +75,11 @@ async function p2021day8_part1(input: string, ...params: any[]) {
 	const arr = convert(input);
 	const inputs = arr[0];
 	const outputs = arr[1];
-
+	/* 
 	console.log(inputs[0])
 	console.log(outputs[0])
 	console.log(outputs[1])
-	console.log(outputs[2])
-
+	console.log(outputs[2]) */
 
 	let sum = 0;
 	const unique = new Set([2, 3, 4, 7]);
@@ -72,90 +96,16 @@ async function p2021day8_part1(input: string, ...params: any[]) {
 	return sum;
 }
 
-// default decode
-const defaultDecoder = new Map<string, number>();
-defaultDecoder.set('abcefg', 0)
-defaultDecoder.set('cf', 1)
-defaultDecoder.set('acdeg', 2)
-defaultDecoder.set('acdfg', 3)
-defaultDecoder.set('bcdf', 4)
-defaultDecoder.set('abdfg', 5)
-defaultDecoder.set('abdefg', 6)
-defaultDecoder.set('acf', 7)
-defaultDecoder.set('abcdefg', 8)
-defaultDecoder.set('abcdfg', 9)
-
-
-function decode(str: string): number {
-	const nr = defaultDecoder.get(str);
-	if (!nr) {
-		return -1
-	}
-	return nr;
-}
-
-interface charPermut {
-	a: string,
-	b: string,
-	c: string,
-	d: string,
-	e: string,
-	f: string,
-	g: string
-}
-
-function translate(str: string, lang: charPermut): string {
-	let permutMap: Map<string, string> = new Map();
-	permutMap.set('a', lang.a);
-	permutMap.set('b', lang.b);
-	permutMap.set('c', lang.c);
-	permutMap.set('d', lang.d);
-	permutMap.set('e', lang.e);
-	permutMap.set('f', lang.f);
-	permutMap.set('g', lang.g);
-
-	const split = str.split('');
-	let newString = '';
-	split.forEach(part => {
-		const splitString = part.split('');
-
-		const newChar = permutMap.get(part);
-		newString = newString + newChar;
-	})
-
-	return newString;
-}
-
 async function p2021day8_part2(input: string, ...params: any[]) {
-	console.log(decode('abcdfg'));
-	console.log(decode('abcdfgss'));
+	const [inputs, outputs] = convertSet(input);
 
-	const str = 'abcdfg';
+	for (let i = 0; i < 1; i++) {
+		const input = inputs[i];
+		const output = outputs[i];
 
-	const lang: charPermut = {
-		a: 'a',
-		b: 'b',
-		c: 'c',
-		d: 'd',
-		e: 'e',
-		f: 'f',
-		g: 'g'
+		console.log(input, output);
+
 	}
-
-	//const trns = translate(str,lang);
-	console.log(decode(translate(str, lang)));
-
-	console.log(decode(translate('acedgfb', {
-		a: 'd',
-		b: 'e',
-		c: 'a',
-		d: 'f',
-		e: 'g',
-		f: 'b',
-		g: 'c'
-	})));
-
-
 
 	return "Not implemented";
 }
