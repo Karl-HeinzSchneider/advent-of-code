@@ -123,7 +123,7 @@ async function p2021day8_part1(input: string, ...params: any[]) {
 	return sum;
 }
 
-async function p2021day8_part2(input: string, ...params: any[]) {
+async function p2021day8_part2OLD(input: string, ...params: any[]) {
 	const [inputs, outputs] = convertSet(input);
 
 	let sum = 0;
@@ -240,8 +240,22 @@ async function p2021day8_part2(input: string, ...params: any[]) {
 			decodeSum = decodeSum + decode[i] * Math.pow(10, 3 - i);
 		}
 
-		console.log(decode,decodeSum);
+		console.log(decode, decodeSum);
 		sum = sum + decodeSum;
+	}
+
+	return sum;
+}
+
+async function p2021day8_part2(input: string, ...params: any[]) {
+	const [inputs, outputs] = convertSet(input);
+
+	let sum = 0;
+
+	for (let i = 0; i < inputs.length; i++) {
+		const input = inputs[i];
+		const output = outputs[i];
+
 	}
 
 	return sum;
