@@ -112,6 +112,69 @@ function polyImproved(input: string, mapper: Map<string, string>, maxIterations:
 	return charMap;
 }
 
+function polyClever(input: string, mapper: Map<string, string>, maxIterations: number): Map<string, number> {
+	let charMap: Map<string, number> = new Map();
+
+	const increaseElementCount = function (element: string, diff: number) {
+		if (!charMap.has(element)) {
+			charMap.set(element, 1);
+		}
+		else {
+			const old = charMap.get(element)!;
+			charMap.set(element, old + diff);
+		}
+	}
+
+	// count starting Elements
+	input.split('').forEach(char => {
+		increaseElementCount(char, 1);
+	})
+
+	let pairMap: Map<string, number> = new Map();
+
+	const increasePairCount = function (pair: string, diff: number) {
+		if (!pairMap.has(pair)) {
+			pairMap.set(pair, diff);
+		}
+		else {
+			const old = pairMap.get(pair)!;
+			pairMap.set(pair, old + diff);
+		}
+	}
+
+	// create substrings of 2 Chars 	
+
+	for (let i = 0; i < input.length - 1; i++) {
+		const substr = input[i] + input[i + 1];
+		increasePairCount(substr, 1);
+	}
+	//console.log([...pairMap])
+
+	let iteration = 0;
+
+	while (iteration < maxIterations) {
+
+		[...pairMap].forEach(pair => {
+			const str = pair[0];
+			const count = pair[1];
+
+			const newElem = mapper.get(str)!;
+			increaseElementCount(newElem, count);
+
+			increasePairCount(str, -count);
+
+			increasePairCount(str[0] + newElem, count);
+			increasePairCount(newElem + str[1], count);
+		})
+
+		iteration++;
+
+	}
+
+	return charMap;
+}
+
+
 async function p2021day14_part1(input: string, ...params: any[]) {
 	const conv = convert(input);
 
@@ -160,7 +223,7 @@ async function p2021day14_part2(input: string, ...params: any[]) {
 	//console.log(replaceMap)
 
 	let charMap: Map<string, number> = new Map();
-	charMap = polyImproved(template, replaceMap, 10);
+	charMap = polyClever(template, replaceMap, 40);
 
 	const max = [...charMap.entries()].reduce((a, e) => e[1] > a[1] ? e : a);
 
@@ -174,7 +237,7 @@ async function p2021day14_part2(input: string, ...params: any[]) {
 
 async function run() {
 	const part1tests: TestCase[] = [{ input: example, expected: '1588' }];
-	const part2tests: TestCase[] = [{ input: example, expected: '1588' }];
+	const part2tests: TestCase[] = [{ input: example, expected: '2188189693529' }];
 
 	// Run tests
 	test.beginTests();
