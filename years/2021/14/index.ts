@@ -63,17 +63,66 @@ function poly(input: string, mapper: Map<string, string>): string {
 	return newPolyString;
 }
 
+function polyImproved(input: string, mapper: Map<string, string>, maxIterations: number): Map<string, number> {
+	let charMap: Map<string, number> = new Map();
+
+	const increaseElementCount = function (element: string) {
+		if (!charMap.has(element)) {
+			charMap.set(element, 1);
+		}
+		else {
+			const old = charMap.get(element)!;
+			charMap.set(element, old + 1);
+		}
+	}
+
+	// count starting Elements
+	input.split('').forEach(char => {
+		increaseElementCount(char);
+	})
+
+
+	const DFS = function (current: string, iteration: number) {
+
+		const newElem = mapper.get(current)!;
+
+		increaseElementCount(newElem);
+
+		const newIteration = iteration + 1;
+
+		if (newIteration > maxIterations) {
+			return;
+		}
+
+		DFS(current[0] + newElem, newIteration);
+		DFS(newElem + current[1], newIteration);
+	}
+
+	// create substrings of 2 Chars and do DSF for each
+	let substrArr: string[] = [];
+
+	for (let i = 0; i < input.length - 1; i++) {
+		substrArr.push(input[i] + input[i + 1]);
+	}
+
+	substrArr.forEach(sub => {
+		DFS(sub, 1);
+	})
+
+	return charMap;
+}
+
 async function p2021day14_part1(input: string, ...params: any[]) {
 	const conv = convert(input);
 
 	const template = conv.template;
 	const replaceMap = conv.map;
 
-	console.log(replaceMap)
+	//console.log(replaceMap)
 
 	const steps = 10;
 	let polyString = template;
-	console.log(0, polyString.length, polyString);
+	//console.log(0, polyString.length, polyString);
 
 	for (let i = 1; i <= steps; i++) {
 		polyString = poly(polyString, replaceMap);
@@ -90,25 +139,42 @@ async function p2021day14_part1(input: string, ...params: any[]) {
 			charMap.set(char, old + 1);
 		}
 	})
-	console.log(charMap)
+	//console.log(charMap)
 
 	const max = [...charMap.entries()].reduce((a, e) => e[1] > a[1] ? e : a);
 
 	const min = [...charMap.entries()].reduce((a, e) => e[1] < a[1] ? e : a);
 
 	const diff = max[1] - min[1];
-	console.log(min, max, diff);
+	//console.log(min, max, diff);
 
 	return diff;
 }
 
 async function p2021day14_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	const conv = convert(input);
+
+	const template = conv.template;
+	const replaceMap = conv.map;
+
+	//console.log(replaceMap)
+
+	let charMap: Map<string, number> = new Map();
+	charMap = polyImproved(template, replaceMap, 10);
+
+	const max = [...charMap.entries()].reduce((a, e) => e[1] > a[1] ? e : a);
+
+	const min = [...charMap.entries()].reduce((a, e) => e[1] < a[1] ? e : a);
+
+	const diff = max[1] - min[1];
+	//console.log(min, max, diff);
+
+	return diff;
 }
 
 async function run() {
 	const part1tests: TestCase[] = [{ input: example, expected: '1588' }];
-	const part2tests: TestCase[] = [];
+	const part2tests: TestCase[] = [{ input: example, expected: '1588' }];
 
 	// Run tests
 	test.beginTests();
