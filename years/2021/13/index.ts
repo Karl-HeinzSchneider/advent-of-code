@@ -64,34 +64,46 @@ function convert(input: string) {
 function fold(input: point2D[], fold: fold): point2D[] {
 	console.log(fold);
 	let newSet: Set<point2D> = new Set();
-
+	let newMap: Map<point2D, number> = new Map();
 	// x
 	if (fold.direction === 'x') {
 		input.forEach(p => {
 			if (p.x < fold.value) {
 				newSet.add(p);
+
+				newMap.set(p, 1);
 			}
 			else {
-				newSet.add({ x: 2 * fold.value - p.x, y: p.y });
+				const newP = { x: 2 * fold.value - p.x, y: p.y };
+				newSet.add(newP);
+
+				newMap.set(newP, 1);
 			}
 		})
-		console.log(newSet)
-		return Array.from(newSet);
 	}
 	// Y
 	else {
 		input.forEach(p => {
 			if (p.y < fold.value) {
 				newSet.add(p);
+
+				newMap.set(p, 1);
+
 			}
 			else {
-				newSet.add({ x: p.x, y: 2 * fold.value - p.y });
+				const newP = { x: p.x, y: 2 * fold.value - p.y };
+				newSet.add(newP);
+
+				newMap.set(newP, 1);
 			}
 		})
-		console.log(newSet)
-
-		return Array.from(newSet);
 	}
+
+	const newArr = [...newMap.keys()];
+	console.log(newArr)
+
+	return newArr;
+	return Array.from(newSet);
 }
 
 function foldSet(input: Set<string>, fold: fold): Set<string> {
