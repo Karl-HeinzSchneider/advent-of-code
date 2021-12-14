@@ -54,9 +54,9 @@ function isSmall(input: string) {
 	return input.toLowerCase() === input;
 }
 
-function findAllPaths(start: string, end: string, adjMap: Map<string, string[]>) {
+function findAllPaths(start: string, end: string, adjMap: Map<string, string[]>, canVisitTwice: boolean = false) {
 
-	const BFS = function (current: string, target: string, visited: string[]) {
+	const BFS = function (current: string, target: string, visited: string[], visitedTwice: boolean) {
 		const newVisited = [...visited, current];
 
 		if (current === target) {
@@ -69,18 +69,25 @@ function findAllPaths(start: string, end: string, adjMap: Map<string, string[]>)
 
 		adjArr.forEach(adj => {
 			if (isSmall(adj)) {
-				if (!newVisited.includes(adj)) {
-					BFS(adj, target, newVisited);
+
+				if (newVisited.includes(adj)) {
+					//BFS(adj, target, newVisited, visitedTwice);
+					if (!visitedTwice && adj != start && adj != end) {
+						BFS(adj, target, newVisited, true);
+					}
+				}
+				else {
+					BFS(adj, target, newVisited, visitedTwice);
 				}
 			}
 			else {
-				BFS(adj, target, newVisited);
+				BFS(adj, target, newVisited, visitedTwice);
 			}
 		})
 	}
 	let paths: string[][] = [];
 
-	BFS(start,end,[]);
+	BFS(start, end, [], !canVisitTwice);
 
 	return paths;
 }
@@ -98,12 +105,21 @@ async function p2021day12_part1(input: string, ...params: any[]) {
 }
 
 async function p2021day12_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	const adjMap = convert(input);
+	//console.log(adjMap);
+
+	const start = 'start';
+	const end = 'end';
+
+	const paths = findAllPaths(start, end, adjMap, true);
+	//console.log(paths)
+
+	return paths.length;
 }
 
 async function run() {
 	const part1tests: TestCase[] = [{ input: example, expected: '10' }];
-	const part2tests: TestCase[] = [];
+	const part2tests: TestCase[] = [{ input: example, expected: '36' }];
 
 	// Run tests
 	test.beginTests();
