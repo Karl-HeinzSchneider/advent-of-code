@@ -75,6 +75,30 @@ function isLineCorrupt(input: string) {
 	return { corrupt: false, firstIncorrect: '', stack: stack };
 }
 
+function calcCompleteString(input: string[]): string[] {
+	let arr = [...input];
+	let complete: string[] = [];
+
+	const openSet = new Set(['(', '[', '{', '<']);
+	const closeSet = new Set([')', ']', '}', '>']);
+
+	const mapper: Map<string, string> = new Map();
+
+	for (let i = 0; i < openSet.size; i++) {
+		const open = [...openSet];
+		const close = [...closeSet];
+		mapper.set(open[i], close[i]);
+	}
+
+	while (arr.length > 0) {
+		const last = arr.pop()!;
+		const complement = mapper.get(last)!;
+		complete.push(complement);
+	}
+
+	return complete;
+}
+
 async function p2021day10_part1(input: string, ...params: any[]) {
 	const arr = input.split('\n');
 
@@ -105,31 +129,43 @@ async function p2021day10_part2(input: string, ...params: any[]) {
 	const arr = input.split('\n');
 
 	const scoreMap: Map<string, number> = new Map();
-	scoreMap.set(')', 3);
-	scoreMap.set(']', 57);
-	scoreMap.set('}', 1197);
-	scoreMap.set('>', 25137);
+	scoreMap.set(')', 1);
+	scoreMap.set(']', 2);
+	scoreMap.set('}', 3);
+	scoreMap.set('>', 4);
 
-
-	let score = 0;
+	let scoreArray: number[] = [];
 
 	for (let i = 0; i < arr.length; i++) {
 		const line = arr[i];
-		const isCorrupt = isLineCorrupt(line);
+		const lineParse = isLineCorrupt(line);
 
-		const mapped = scoreMap.get(isCorrupt.firstIncorrect);
-		const lineScore = mapped ? mapped : 0;
-		//console.log(isCorrupt, lineScore)
+		if (!lineParse.corrupt) {
+			const lineStack = lineParse.stack!;
+			const complement = calcCompleteString(lineStack);
 
-		score = score + lineScore;
+			//console.log(lineStack, complement);
+			let lineScore = 0;
+			for (let j = 0; j < complement.length; j++) {
+				const charScore = scoreMap.get(complement[j])!;
+
+				lineScore = (lineScore * 5) + charScore;
+			}
+			scoreArray.push(lineScore);
+		}
 	}
+	
+	scoreArray.sort((a, b) => a - b);	
+
+	const index = Math.floor(scoreArray.length / 2);
+	const score = scoreArray[index];
 
 	return score;
 }
 
 async function run() {
 	const part1tests: TestCase[] = [{ input: example, expected: '26397' }];
-	const part2tests: TestCase[] = [];
+	const part2tests: TestCase[] = [{ input: example, expected: '288957' }];
 
 	// Run tests
 	test.beginTests();
@@ -144,7 +180,7 @@ async function run() {
 		}
 	});
 	test.endTests();
-	//return;
+	
 	// Get input and run program while measuring performance
 	const input = await util.getInput(DAY, YEAR);
 
