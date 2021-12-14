@@ -11,9 +11,175 @@ const DAY = 13;
 // solution path: C:\Users\Johannes\advent-of-code\years\2021\13\index.ts
 // data path    : C:\Users\Johannes\advent-of-code\years\2021\13\data.txt
 // problem url  : https://adventofcode.com/2021/day/13
+const example = `6,10
+0,14
+9,10
+0,3
+10,4
+4,11
+6,0
+6,12
+4,1
+0,13
+10,12
+3,4
+3,0
+8,4
+1,10
+2,14
+8,10
+9,0
+
+fold along y=7
+fold along x=5`;
+
+interface point2D { x: number, y: number };
+interface fold { direction: string, value: number };
+
+function convert(input: string) {
+	const arr = input.split('\n');
+
+	let pointArr: point2D[] = [];
+	let foldArr: fold[] = [];
+
+	for (let i = 0; i < arr.length; i++) {
+		const line = arr[i];
+
+		if (line === '') {
+			continue;
+		}
+		else if (line[0] === 'f') {
+			const split = line.split(' ');
+			const splitTwo = split[2].split('=');
+			foldArr.push({ direction: splitTwo[0], value: Number(splitTwo[1]) });
+		} else {
+			const split = line.split(',').map(Number);
+			pointArr.push({ x: split[0], y: split[1] });
+		}
+	}
+
+	return { points: pointArr, folds: foldArr };
+}
+
+function fold(input: point2D[], fold: fold): point2D[] {
+	console.log(fold);
+	if (fold.direction === 'x') {
+		let newSet: Set<point2D> = new Set();
+
+		input.forEach(p => {
+			if (p.x < fold.value) {
+				newSet.add(p);
+			}
+			else {
+				newSet.add({ x: 2 * fold.value - p.x, y: p.y });
+			}
+		})
+		return Array.from(newSet);
+	} else if (fold.direction === 'y') {
+		let newSet: Set<point2D> = new Set();
+
+		input.forEach(p => {
+			if (p.y < fold.value) {
+				newSet.add(p);
+			}
+			else {
+				newSet.add({ x: p.x, y: 2 * fold.value - p.y });
+			}
+		})
+		return Array.from(newSet);
+	}
+	else {
+		return [];
+	}
+}
+
+function foldSet(input: Set<string>, fold: fold): Set<string> {
+	console.log(fold);
+	let newSet: Set<string> = new Set();
+	if (fold.direction === 'x') {
+		input.forEach(p => {
+			const point = IDtoPoint(p);
+
+			if (point.x < fold.value) {
+				newSet.add(p);
+			}
+			else {
+				const newID = calcID({ x: 2 * fold.value - point.x, y: point.y })
+				newSet.add(newID);
+			}
+		})
+		return newSet;
+	}
+	else if (fold.direction === 'y') {
+		input.forEach(p => {
+			const point = IDtoPoint(p);
+
+			if (point.y < fold.value) {
+				newSet.add(p);
+			}
+			else {
+				const newID = calcID({ x: point.x, y: 2 * fold.value - point.y })
+				newSet.add(newID);
+			}
+		})
+		return newSet
+	}
+	else {
+		return new Set();
+	}
+}
+
+function calcID(point: point2D): string {
+	return `${point.x}-${point.y}`;
+}
+
+function IDtoPoint(ID: string): point2D {
+	const split = ID.split('-').map(Number);
+	return { x: split[0], y: split[1] };
+}
+
+function printStuff(points: Set<string>, sizeX: number, sizeY: number) {
+	let tmpStr = '';
+	for (let i = 0; i < sizeY; i++) {
+		for (let j = 0; j < sizeX; j++) {
+			const p: point2D = { x: j, y: i };
+			const pStr = calcID(p);
+			//console.log(p)
+
+			if (points.has(pStr)) {
+				tmpStr = tmpStr + '#';
+			}
+			else {
+				tmpStr = tmpStr + '.';
+			}
+		}
+		tmpStr = tmpStr + '\n';
+	}
+	console.log(tmpStr)
+}
 
 async function p2021day13_part1(input: string, ...params: any[]) {
-	return "Not implemented";
+	const conv = convert(input);
+
+	const points = new Set(conv.points.map(p => calcID(p)));
+	const folds = conv.folds;
+
+	console.log(points)
+	console.log(folds)
+
+	//printStuff(points, 11, 15);
+
+
+	const firstFold = folds[0];
+	const newPoints = foldSet(points, firstFold);
+	//printStuff(newPoints, 11, 7);
+
+	//const secondFold = folds[1];
+	//const newPointsTwo = fold(newPoints, secondFold);
+	//printStuff(newPointsTwo, 5, 7);
+
+
+	return newPoints.size;
 }
 
 async function p2021day13_part2(input: string, ...params: any[]) {
@@ -21,7 +187,7 @@ async function p2021day13_part2(input: string, ...params: any[]) {
 }
 
 async function run() {
-	const part1tests: TestCase[] = [];
+	const part1tests: TestCase[] = [{ input: example, expected: '17' }];
 	const part2tests: TestCase[] = [];
 
 	// Run tests
@@ -37,7 +203,7 @@ async function run() {
 		}
 	});
 	test.endTests();
-
+	//return;
 	// Get input and run program while measuring performance
 	const input = await util.getInput(DAY, YEAR);
 
