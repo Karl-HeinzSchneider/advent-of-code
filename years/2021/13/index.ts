@@ -63,9 +63,10 @@ function convert(input: string) {
 
 function fold(input: point2D[], fold: fold): point2D[] {
 	console.log(fold);
-	if (fold.direction === 'x') {
-		let newSet: Set<point2D> = new Set();
+	let newSet: Set<point2D> = new Set();
 
+	// x
+	if (fold.direction === 'x') {
 		input.forEach(p => {
 			if (p.x < fold.value) {
 				newSet.add(p);
@@ -74,10 +75,11 @@ function fold(input: point2D[], fold: fold): point2D[] {
 				newSet.add({ x: 2 * fold.value - p.x, y: p.y });
 			}
 		})
+		console.log(newSet)
 		return Array.from(newSet);
-	} else if (fold.direction === 'y') {
-		let newSet: Set<point2D> = new Set();
-
+	}
+	// Y
+	else {
 		input.forEach(p => {
 			if (p.y < fold.value) {
 				newSet.add(p);
@@ -86,15 +88,14 @@ function fold(input: point2D[], fold: fold): point2D[] {
 				newSet.add({ x: p.x, y: 2 * fold.value - p.y });
 			}
 		})
+		console.log(newSet)
+
 		return Array.from(newSet);
-	}
-	else {
-		return [];
 	}
 }
 
 function foldSet(input: Set<string>, fold: fold): Set<string> {
-	console.log(fold);
+	console.log(fold, input.size);
 	let newSet: Set<string> = new Set();
 	if (fold.direction === 'x') {
 		input.forEach(p => {
@@ -138,7 +139,7 @@ function IDtoPoint(ID: string): point2D {
 	return { x: split[0], y: split[1] };
 }
 
-function printStuff(points: Set<string>, sizeX: number, sizeY: number) {
+function printStuffSet(points: Set<string>, sizeX: number, sizeY: number) {
 	let tmpStr = '';
 	for (let i = 0; i < sizeY; i++) {
 		for (let j = 0; j < sizeX; j++) {
@@ -158,31 +159,76 @@ function printStuff(points: Set<string>, sizeX: number, sizeY: number) {
 	console.log(tmpStr)
 }
 
+function printStuff(points: point2D[], sizeX: number, sizeY: number) {
+	let tmpStr = '';
+	for (let i = 0; i < sizeY; i++) {
+		for (let j = 0; j < sizeX; j++) {
+
+			const contains = points.some(p => p.x === j && p.y === i);
+
+			if (contains) {
+				tmpStr = tmpStr + '#';
+			}
+			else {
+				tmpStr = tmpStr + '.';
+			}
+		}
+		tmpStr = tmpStr + '\n';
+	}
+	console.log(tmpStr)
+}
+
 async function p2021day13_part1(input: string, ...params: any[]) {
 	const conv = convert(input);
 
-	const points = new Set(conv.points.map(p => calcID(p)));
+	const points = conv.points;
 	const folds = conv.folds;
 
-	console.log(points)
-	console.log(folds)
+	//console.log(points)
+	//console.log(folds)
 
+	let newPoints = points;
+	printStuff(newPoints, 11, 15);
+
+	folds.slice(0, 1).forEach(f => {
+		newPoints = fold(points, f);
+		newPoints.sort();
+		console.log(newPoints)
+		printStuff(newPoints, 11, 7);
+
+	})
 	//printStuff(points, 11, 15);
-
-
-	const firstFold = folds[0];
-	const newPoints = foldSet(points, firstFold);
-	//printStuff(newPoints, 11, 7);
+	//const firstFold = folds[0];
+	//const newPoints = foldSet(points, firstFold);
 
 	//const secondFold = folds[1];
 	//const newPointsTwo = fold(newPoints, secondFold);
 	//printStuff(newPointsTwo, 5, 7);
 
 
-	return newPoints.size;
+	return newPoints.length;
 }
 
 async function p2021day13_part2(input: string, ...params: any[]) {
+	const conv = convert(input);
+
+	const points = new Set(conv.points.map(p => calcID(p)));
+	const folds = conv.folds;
+
+	let newPoints = points;
+
+	folds.forEach(fold => {
+		newPoints = foldSet(points, fold);
+	})
+
+	//printStuff(newPoints, 100, 100);
+
+
+	//const secondFold = folds[1];
+	//const newPointsTwo = fold(newPoints, secondFold);
+	//printStuff(newPointsTwo, 5, 7);
+
+
 	return "Not implemented";
 }
 
@@ -203,7 +249,7 @@ async function run() {
 		}
 	});
 	test.endTests();
-	//return;
+	return;
 	// Get input and run program while measuring performance
 	const input = await util.getInput(DAY, YEAR);
 
