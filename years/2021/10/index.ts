@@ -72,7 +72,7 @@ function isLineCorrupt(input: string) {
 		}
 	}
 
-	return { corrupt: false, firstIncorrect: '' };
+	return { corrupt: false, firstIncorrect: '', stack: stack };
 }
 
 async function p2021day10_part1(input: string, ...params: any[]) {
@@ -93,7 +93,7 @@ async function p2021day10_part1(input: string, ...params: any[]) {
 
 		const mapped = scoreMap.get(isCorrupt.firstIncorrect);
 		const lineScore = mapped ? mapped : 0;
-		console.log(isCorrupt, lineScore)
+		//console.log(isCorrupt, lineScore)
 
 		score = score + lineScore;
 	}
@@ -102,7 +102,29 @@ async function p2021day10_part1(input: string, ...params: any[]) {
 }
 
 async function p2021day10_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	const arr = input.split('\n');
+
+	const scoreMap: Map<string, number> = new Map();
+	scoreMap.set(')', 3);
+	scoreMap.set(']', 57);
+	scoreMap.set('}', 1197);
+	scoreMap.set('>', 25137);
+
+
+	let score = 0;
+
+	for (let i = 0; i < arr.length; i++) {
+		const line = arr[i];
+		const isCorrupt = isLineCorrupt(line);
+
+		const mapped = scoreMap.get(isCorrupt.firstIncorrect);
+		const lineScore = mapped ? mapped : 0;
+		//console.log(isCorrupt, lineScore)
+
+		score = score + lineScore;
+	}
+
+	return score;
 }
 
 async function run() {
