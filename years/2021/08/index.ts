@@ -1,4 +1,4 @@
-import _, { uniq } from "lodash";
+import _, { map, uniq } from "lodash";
 import * as util from "../../../util/util";
 import * as test from "../../../util/test";
 import chalk from "chalk";
@@ -247,14 +247,95 @@ async function p2021day8_part2OLD(input: string, ...params: any[]) {
 	return sum;
 }
 
+class Solver {
+	private dictMap: Map<string, Map<string, number>> = new Map();
+
+	constructor() {
+		this.calcPermutations();
+	}
+
+	private calcPermutations() {
+		const charArray = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
+		const permut = util.getPermutations(charArray);
+		const defaultNumbers = ['abcefg', 'cf', 'acdeg', 'acdfg', 'bcdf', 'abdfg', 'abdefg', 'acf', 'abcdefg', 'abcdfg'];
+
+
+		permut.forEach(mut => {
+			const dict: Map<string, string> = new Map<string, string>();
+			for (let i = 0; i < 7; i++) {
+				dict.set(charArray[i], mut[i]);
+			}
+
+			const numberMap: Map<string, number> = new Map();
+			for (let i = 0; i < defaultNumbers.length; i++) {
+				numberMap.set(this.translateString(defaultNumbers[i], dict), i);
+			}
+
+			const id = this.calcID(Array.from(numberMap.keys()));
+			this.dictMap.set(id, numberMap);
+		})
+	}
+
+	private calcID(input: string[]): string {
+		const arr = input;
+		arr.sort();
+
+		let str = '';
+		arr.forEach(nr => {
+			str = str + nr + '-';
+		})
+
+		return str;
+	}
+
+	public translateString(input: string, dict: Map<string, string>): string {
+		const translate = input.split('').map(char => dict.get(char)!).join('');
+		const sorted = sortLetters(translate);
+		return sorted;
+	}
+
+	public findDict(input: string[]) {
+		const arr = input;
+		arr.sort();
+
+		const id = this.calcID(arr);
+
+		return this.dictMap.get(id);
+	}
+
+	public decodeString(input: string, dict: Map<string, number>): number {
+		return dict.get(input)!;
+	}
+}
+
 async function p2021day8_part2(input: string, ...params: any[]) {
-	const [inputs, outputs] = convertSet(input);
+	const [inputs, outputs] = convert(input);
+	const solver = new Solver();
 
 	let sum = 0;
 
 	for (let i = 0; i < inputs.length; i++) {
 		const input = inputs[i];
 		const output = outputs[i];
+
+		//console.log(input);
+		//console.log(output);
+
+		const dict = solver.findDict(input)!;
+		//console.log(dict)
+
+		const decoded = output.map(str => {
+			return solver.decodeString(str, dict);
+		})
+		//console.log(decoded)
+
+		let decodeSum = 0;
+
+		for (let i = 0; i < decoded.length; i++) {
+			decodeSum = decodeSum + decoded[i] * Math.pow(10, 3 - i);
+		}
+		//console.log(decodeSum)
+		sum = sum + decodeSum;
 
 	}
 
