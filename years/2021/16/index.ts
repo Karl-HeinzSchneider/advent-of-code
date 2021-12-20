@@ -12,7 +12,106 @@ const DAY = 16;
 // data path    : C:\Users\Johannes\advent-of-code\years\2021\16\data.txt
 // problem url  : https://adventofcode.com/2021/day/16
 
+function convert(input: string) {
+	/* 
+	0 = 0000
+	1 = 0001
+	2 = 0010
+	3 = 0011
+	4 = 0100
+	5 = 0101
+	6 = 0110
+	7 = 0111
+	8 = 1000
+	9 = 1001
+	A = 1010
+	B = 1011
+	C = 1100
+	D = 1101
+	E = 1110
+	F = 1111
+	*/
+	let hexMap: Map<string, string> = new Map();
+	hexMap.set('0', '0000');
+	hexMap.set('1', '0001');
+	hexMap.set('2', '0010');
+	hexMap.set('3', '0011');
+	hexMap.set('4', '0100');
+	hexMap.set('5', '0101');
+	hexMap.set('6', '0110');
+	hexMap.set('7', '0111');
+	hexMap.set('8', '1000');
+	hexMap.set('9', '1001');
+
+	hexMap.set('A', '1010');
+	hexMap.set('B', '1011');
+	hexMap.set('C', '1100');
+	hexMap.set('D', '1101');
+	hexMap.set('E', '1110');
+	hexMap.set('F', '1111');
+
+
+	let bitArr: string[] = [];
+	for (let i = 0; i < input.length; i++) {
+		const hex = input[i];
+		const decode = hexMap.get(hex)!;
+		bitArr.push(decode);
+	}
+
+	return bitArr.join('');
+	console.log(bitArr)
+}
+
+interface IPackage {
+	version: number,
+	typeID: number,
+	type: 'literal' | 'operator',
+
+	subPackets?: number,
+	subPacketsLength?: number
+}
+
+function parsePackage(input: string, startIndex: number): IPackage {
+
+	let index = startIndex;
+
+	let pack: Partial<IPackage> = {};
+
+	const version = input.slice(index, index + 3);
+	pack.version = parseInt(version, 2);
+	index = index + 3;
+
+	const typeID = input.slice(index, index + 3);
+	pack.typeID = parseInt(typeID, 2);
+	pack.type = pack.typeID === 4 ? 'literal' : 'operator';
+	index = index + 3;
+
+	if (pack.type === "operator") {
+		const lengthTypeID = input.slice(index, index + 1);
+		index++;
+		
+		if (lengthTypeID === '0') {
+
+		}
+		else {
+			const l = input.slice(index,index+11);
+			pack.subPackets = parseInt(l,2);
+		}
+	}
+
+
+	return pack as IPackage;
+}
+
 async function p2021day16_part1(input: string, ...params: any[]) {
+	const bitString = convert(input);
+	console.log(bitString.slice(0, 50));
+
+
+
+	const firstPackage = parsePackage(bitString, 0);
+
+	console.log(firstPackage);
 	return "Not implemented";
 }
 
