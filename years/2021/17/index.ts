@@ -168,12 +168,6 @@ async function p2021day17_part1(input: string, ...params: any[]) {
 	console.log('lowerBound: ', lower, gauss(lower));
 	console.log('upperBound: ', upper, gauss(upper));
 
-
-	let probe: probe = {
-		x: 0, y: 0,
-		dx: 6, dy: 9
-	}
-
 	const maxJ = 250;
 
 	let probeMax: probeReport;
