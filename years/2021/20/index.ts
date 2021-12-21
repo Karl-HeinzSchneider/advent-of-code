@@ -12,7 +12,55 @@ const DAY = 20;
 // data path    : C:\Users\Johannes\advent-of-code\years\2021\20\data.txt
 // problem url  : https://adventofcode.com/2021/day/20
 
+class Grid {
+
+	gridMap: Map<string, string> = new Map();
+
+	constructor() {
+	}
+
+	public setGridPoint(x: number, y: number, char: string) {
+		this.gridMap.set(`${x}|${y}`, char);
+	}
+
+	public getGridPoint(x: number, y: number): string {
+		const id = `${x}|${y}`;
+
+		const char = this.gridMap.get(id);
+
+		return char ? char : '.';
+	}
+}
+
+function convert(input: string) {
+	const arr = input.split('\n');
+	const algo = arr[0];
+
+	const grid = new Grid();
+
+
+	for (let i = 2; i < arr.length; i++) {
+		const elem = arr[i];
+
+		const line = elem.split('');
+
+		for (let j = 0; j < line.length; j++) {
+			const char = line[j];
+			grid.setGridPoint(j, i - 2, char);
+		}
+	}
+
+	return grid;
+}
+
 async function p2021day20_part1(input: string, ...params: any[]) {
+
+	const grid = convert(input);
+
+	[0,1,2,3,4,5,6,7,8].forEach(muh => {
+		console.log(grid.getGridPoint(muh,0));
+	})
+
 	return "Not implemented";
 }
 
