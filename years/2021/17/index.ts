@@ -196,12 +196,32 @@ async function p2021day17_part1(input: string, ...params: any[]) {
 }
 
 async function p2021day17_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	const target = convert(input);
+	console.log(target);
+
+	const lower = 0;
+	const upper = 0;
+	const maxJ = 250;
+
+	let idSet: Set<string> = new Set<string>();
+
+	for (let i = 1; i <= target.xMax; i++) {
+		for (let j = target.yMin; j < maxJ; j++) {
+			const newProbe = fireProbe({ x: 0, y: 0, dx: i, dy: j }, target);
+
+			if (newProbe.inTarget) {
+				const id = `${newProbe.probe.dx},${newProbe.probe.dy}`
+				idSet.add(id);
+			}
+		}
+	}
+
+	return idSet.size;
 }
 
 async function run() {
 	const part1tests: TestCase[] = [{ input: example, expected: '45' }];
-	const part2tests: TestCase[] = [];
+	const part2tests: TestCase[] = [{ input: example, expected: '112' }];
 
 	// Run tests
 	test.beginTests();
