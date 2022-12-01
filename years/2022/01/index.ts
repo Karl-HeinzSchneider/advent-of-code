@@ -12,12 +12,82 @@ const DAY = 1;
 // data path    : C:\Users\Johannes\advent-of-code\years\2022\01\data.txt
 // problem url  : https://adventofcode.com/2022/day/1
 
+interface elv {
+	food: number[],
+	calories: number
+}
+
 async function p2022day1_part1(input: string, ...params: any[]) {
-	return "Not implemented";
+	const arr = input.split('\n')
+
+	const elves: elv[] = []
+	let tmp: elv = {
+		food: [],
+		calories: 0
+	}
+
+	let max = 0
+
+	for (let i = 0; i < arr.length; i++) {
+		const entry = arr[i]
+
+		if (entry == '') {
+			//console.log(tmp)
+			elves.push(tmp)
+			if (tmp.calories > max) {
+				max = tmp.calories
+			}
+			tmp = {
+				food: [],
+				calories: 0
+			}
+		}
+		else {
+			const currentFood = Number(entry)
+			tmp.food.push(currentFood)
+			tmp.calories = tmp.calories + currentFood
+		}
+	}
+	elves.push(tmp)
+	//console.log(tmp)
+
+
+	return max;
 }
 
 async function p2022day1_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	const arr = input.split('\n')
+
+	const elves: elv[] = []
+	let tmp: elv = {
+		food: [],
+		calories: 0
+	}
+
+	for (let i = 0; i < arr.length; i++) {
+		const entry = arr[i]
+
+		if (entry == '') {
+			//console.log(tmp)
+			elves.push(tmp)
+
+			tmp = {
+				food: [],
+				calories: 0
+			}
+		}
+		else {
+			const currentFood = Number(entry)
+			tmp.food.push(currentFood)
+			tmp.calories = tmp.calories + currentFood
+		}
+	}
+	elves.push(tmp)
+	//console.log(tmp)
+
+	const sorted = elves.map(x => x.calories).sort((a, b) => b - a)
+
+	return sorted[0] + sorted[1] + sorted[2];
 }
 
 async function run() {
