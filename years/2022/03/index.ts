@@ -12,12 +12,56 @@ const DAY = 3;
 // data path    : C:\Users\Johannes\advent-of-code\years\2022\03\data.txt
 // problem url  : https://adventofcode.com/2022/day/3
 
+const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+
 async function p2022day3_part1(input: string, ...params: any[]) {
-	return "Not implemented";
+	const priority = new Map<string, number>()
+	alphabet.split('').forEach((val, index) => {
+		priority.set(val, index + 1)
+	})
+	let score = 0
+
+	input.split('\n').forEach(line => {
+		const arr = line.split('')
+		const half = arr.length / 2
+		const first = arr.slice(0, half)
+		const second = arr.slice(half, arr.length)
+		const intersection = first.filter(x => second.includes(x))
+
+		const dup = intersection[0]
+		const prio = priority.get(dup)!
+		//console.log(intersection, prio)
+		score = score + prio
+	})
+
+	return score;
 }
 
 async function p2022day3_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	const priority = new Map<string, number>()
+	alphabet.split('').forEach((val, index) => {
+		priority.set(val, index + 1)
+	})
+	let score = 0
+
+	const lines = input.split('\n')
+	const groups = lines.length / 3
+
+	for (let i = 0; i < lines.length; i = i + 3) {
+		const first = lines[i].split('')
+		const second = lines[i + 1].split('')
+		const third = lines[i + 2].split('')
+
+		const intersection = first.filter(x => second.includes(x)).filter(x => third.includes(x))
+
+		const dup = intersection[0]
+		const prio = priority.get(dup)!
+		//console.log(intersection, prio)
+		score = score + prio
+	}
+
+	return score;
 }
 
 async function run() {
