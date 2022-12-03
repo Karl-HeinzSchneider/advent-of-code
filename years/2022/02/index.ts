@@ -12,16 +12,98 @@ const DAY = 2;
 // data path    : C:\Users\Johannes\advent-of-code\years\2022\02\data.txt
 // problem url  : https://adventofcode.com/2022/day/2
 
+// Rock Paper Scissors
+// A X
+// B Y
+// C Z
+
+// loss: 0
+// draw: 3
+// win: 6
+
+function scoreCombinaton(combination: string): number {
+	switch (combination) {
+		// outcome + shape
+
+		// Rock + ..
+		case "AX": return 3 + 1;
+		case "AY": return 6 + 2;
+		case "AZ": return 0 + 3;
+
+		// Paper + ..
+		case "BX": return 0 + 1;
+		case "BY": return 3 + 2;
+		case "BZ": return 6 + 3;
+
+		// Scissors + ..
+		case "CX": return 6 + 1;
+		case "CY": return 0 + 2;
+		case "CZ": return 3 + 3;
+
+		default: return 0;
+	}
+}
+
 async function p2022day2_part1(input: string, ...params: any[]) {
-	return "Not implemented";
+	let score = 0
+
+	input.split('\n').forEach(str => {
+		const comb = str.replace(' ', '')
+		score = score + scoreCombinaton(comb);
+	})
+
+	return score;
+}
+
+// Rock Paper Scissors
+// A	B	  C
+// 1	2	  3
+// lose draw win
+// X    Y    Z
+
+function scoreGuide(combination: string): number {
+	switch (combination) {
+		// outcome + shape
+
+		// lose + ..
+		case "AX": return 0 + 3;
+		case "BX": return 0 + 1;
+		case "CX": return 0 + 2;
+
+		// draw + ..
+		case "AY": return 3 + 1;
+		case "BY": return 3 + 2;
+		case "CY": return 3 + 3;
+
+		// win + ..
+		case "AZ": return 6 + 2;
+		case "BZ": return 6 + 3;
+		case "CZ": return 6 + 1;
+
+		default: return 0;
+	}
 }
 
 async function p2022day2_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	let score = 0
+
+	input.split('\n').forEach(str => {
+		const comb = str.replace(' ', '')
+		score = score + scoreGuide(comb);
+	})
+
+	return score;
 }
 
 async function run() {
-	const part1tests: TestCase[] = [];
+	const part1tests: TestCase[] = [
+		{
+			input: `A Y
+			B X
+			C Z`,
+			expected: "15"
+		}
+	];
 	const part2tests: TestCase[] = [];
 
 	// Run tests
