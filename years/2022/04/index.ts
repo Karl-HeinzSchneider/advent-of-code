@@ -12,12 +12,73 @@ const DAY = 4;
 // data path    : C:\Users\Johannes\advent-of-code\years\2022\04\data.txt
 // problem url  : https://adventofcode.com/2022/day/4
 
+interface assignment {
+	first: {
+		from: number,
+		to: number
+	},
+	second: {
+		from: number,
+		to: number
+	}
+}
+
+function readAssignments(input: string): assignment[] {
+	return input.split('\n').map(str => {
+		const split = str.split(',')
+		const one = split[0].split('-').map(Number)
+		const two = split[1].split('-').map(Number)
+
+		return {
+			first: {
+				from: one[0],
+				to: one[1]
+			},
+			second: {
+				from: two[0],
+				to: two[1]
+			}
+		}
+	})
+}
+
 async function p2022day4_part1(input: string, ...params: any[]) {
-	return "Not implemented";
+	const assigments = readAssignments(input)
+
+	let count = 0
+
+	assigments.forEach(a => {
+		if ((a.first.from >= a.second.from && a.first.to <= a.second.to) || (a.second.from >= a.first.from && a.second.to <= a.first.to)) {
+			count = count + 1
+		}
+	})
+
+	//console.log(assigments.slice(0, 5))
+
+	return count;
 }
 
 async function p2022day4_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	const assigments = readAssignments(input)
+
+	let count = 0
+
+	assigments.forEach(a => {
+		const firstFrom = a.first.from
+		const firstTo = a.first.to
+		const secondFrom = a.second.from
+		const secondTo = a.second.to
+		if ((firstFrom >= secondFrom && firstFrom <= secondTo) ||
+			(firstTo >= secondFrom && firstTo <= secondTo) ||
+			(secondFrom >= firstFrom && secondFrom <= firstTo) ||
+			(secondTo >= firstFrom && secondTo <= firstTo)) {
+			count = count + 1
+		}
+	})
+
+	//console.log(assigments.slice(0, 5))
+
+	return count;
 }
 
 async function run() {
