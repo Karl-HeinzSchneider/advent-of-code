@@ -28,7 +28,7 @@ function readCratesObj(input: string): { stack: crateStack[], emptyIndex: number
 	const emptyIndex = arr.findIndex(x => x == '')
 
 	const numberLine = arr[emptyIndex - 1]
-	console.log(emptyIndex, numberLine)
+	//console.log(emptyIndex, numberLine)
 
 	let crates: crateStack[] = []
 	crates.push({ number: 0, crates: [] })
@@ -82,7 +82,7 @@ async function p2022day5_part1(input: string, ...params: any[]) {
 	const crateObj = readCratesObj(input)
 	//console.log(crateObj.emptyIndex)
 	//console.log(crateObj.stack)
-	console.log(crateObj.instructions)
+	//console.log(crateObj.instructions)
 
 
 	let state = crateObj.stack
@@ -110,7 +110,7 @@ async function p2022day5_part2(input: string, ...params: any[]) {
 	const crateObj = readCratesObj(input)
 	//console.log(crateObj.emptyIndex)
 	//console.log(crateObj.stack)
-	console.log(crateObj.instructions)
+	//console.log(crateObj.instructions)
 
 
 	let state = crateObj.stack
