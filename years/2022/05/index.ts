@@ -107,7 +107,37 @@ async function p2022day5_part1(input: string, ...params: any[]) {
 }
 
 async function p2022day5_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	const crateObj = readCratesObj(input)
+	//console.log(crateObj.emptyIndex)
+	//console.log(crateObj.stack)
+	console.log(crateObj.instructions)
+
+
+	let state = crateObj.stack
+	let intructions = crateObj.instructions
+
+	intructions.forEach(instr => {
+		const crates: string[] = []
+		for (let i = 1; i <= instr.amount; i++) {
+			const crate = state[instr.from].crates.pop()
+			if (crate) {
+				crates.push(crate)
+			}
+		}
+		crates.reverse()
+		crates.forEach(c => {
+			state[instr.to].crates.push(c)
+		})
+
+	})
+
+	//console.log(state)
+
+	const crateString = getCratesOntop(state.slice(1))
+	//console.log(crateString)
+
+
+	return crateString;
 }
 
 async function run() {
