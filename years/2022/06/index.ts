@@ -12,7 +12,53 @@ const DAY = 6;
 // data path    : C:\Users\Johannes\advent-of-code\years\2022\06\data.txt
 // problem url  : https://adventofcode.com/2022/day/6
 
+class Queue {
+	public items: string[] = []
+
+	constructor() {
+
+	}
+
+	public enqueue(item: string) {
+		this.items.push(item)
+	}
+	public dequeue() {
+		return this.items.shift();
+	}
+
+	public check(): boolean {
+		let charMap = new Map<string, string>()
+		this.items.forEach(i => {
+			charMap.set(i, i)
+		})
+		if (charMap.size === 4) {
+			console.log(this.items)
+			return true
+		}
+		return false
+	}
+}
+
 async function p2022day6_part1(input: string, ...params: any[]) {
+	const q = new Queue()
+
+	q.enqueue(input[0])
+	q.enqueue(input[1])
+	q.enqueue(input[2])
+	q.enqueue(input[3])
+
+	for (let i = 4; i < input.length; i++) {
+		q.enqueue(input[i])
+		q.dequeue()
+		if (q.check()) {
+			return i + 1
+		}
+	}
+
+
+	console.log(q.items)
+
+
 	return "Not implemented";
 }
 
