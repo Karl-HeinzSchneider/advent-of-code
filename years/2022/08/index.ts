@@ -12,8 +12,42 @@ const DAY = 8;
 // data path    : C:\Users\Johannes\advent-of-code\years\2022\08\data.txt
 // problem url  : https://adventofcode.com/2022/day/8
 
+class Grid {
+	data: number[][] = []
+	size: number = 0;
+
+	constructor(input: string) {
+		const lines = input.split('\n')
+		this.data = input.split('\n').map(x => {
+			return x.split('').map(y => Number(y))
+		})
+		this.size = this.data.length
+	}
+
+	getXY(x: number, y: number): number {
+		if (x < 0 || x > this.size - 1) {
+			return -1
+		}
+		return this.data[x][y]
+	}
+}
+
 async function p2022day8_part1(input: string, ...params: any[]) {
-	return "Not implemented";
+
+	const grid = new Grid(input)
+	console.log('Gridsize', grid.size)
+
+	console.log(grid.getXY(2, 0))
+	let visible = 0
+
+	for (let x = 0; x < grid.size; x++) {
+		for (let y = 0; y < grid.size; y++) {
+			const h = grid.getXY(x, y)
+			//console.log(h)
+		}
+	}
+
+	return visible;
 }
 
 async function p2022day8_part2(input: string, ...params: any[]) {
