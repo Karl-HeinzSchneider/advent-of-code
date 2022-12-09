@@ -11,8 +11,79 @@ const DAY = 7;
 // solution path: C:\Users\Johannes\advent-of-code\years\2022\07\index.ts
 // data path    : C:\Users\Johannes\advent-of-code\years\2022\07\data.txt
 // problem url  : https://adventofcode.com/2022/day/7
+interface file {
+	name: string,
+	size: number
+}
+
+interface dir {
+	name: string,
+	files: file[],
+	subdirs: dir[],
+	parent: dir | undefined
+}
 
 async function p2022day7_part1(input: string, ...params: any[]) {
+	const lines = input.split('\n')
+
+
+	const outerDir: dir = {
+		name: '/',
+		files: [],
+		subdirs: [],
+		parent: undefined
+	};
+	let currentDir: dir = outerDir
+
+	//const len = lines.length
+	const len = 12
+
+	for (let index = 1; index < len; index++) {
+		const line = lines[index].split(' ');
+		console.log(line)
+
+		if (line[0] === '$') {
+			// command
+
+			if (line[1] === 'ls') {
+				// list files/dirs
+
+			} else if (line[1] === 'cd') {
+				// change dir
+				if (line[2] === '/') {
+					currentDir = outerDir
+				}
+				else if (line[2] === '..') {
+
+				}
+			}
+
+
+		} else if (line[0] === 'dir') {
+			// dir
+			const newDir: dir = {
+				name: line[1],
+				files: [],
+				subdirs: [],
+				parent: currentDir
+			}
+			currentDir.subdirs.push(newDir)
+		} else {
+			// file
+			const newFile: file = {
+				name: line[1],
+				size: Number(line[0])
+			}
+			currentDir.files.push(newFile)
+		}
+
+	}
+	lines.forEach(line => {
+
+	})
+
+	console.log(currentDir)
+
 	return "Not implemented";
 }
 
