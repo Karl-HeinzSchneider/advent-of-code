@@ -26,12 +26,12 @@ class Queue {
 		return this.items.shift();
 	}
 
-	public check(): boolean {
+	public check(size: number): boolean {
 		let charMap = new Map<string, string>()
 		this.items.forEach(i => {
 			charMap.set(i, i)
 		})
-		if (charMap.size === 4) {
+		if (charMap.size === size) {
 			console.log(this.items)
 			return true
 		}
@@ -50,19 +50,32 @@ async function p2022day6_part1(input: string, ...params: any[]) {
 	for (let i = 4; i < input.length; i++) {
 		q.enqueue(input[i])
 		q.dequeue()
-		if (q.check()) {
+		if (q.check(4)) {
 			return i + 1
 		}
 	}
-
-
-	console.log(q.items)
-
 
 	return "Not implemented";
 }
 
 async function p2022day6_part2(input: string, ...params: any[]) {
+	const q = new Queue()
+
+	for (let i = 0; i < 14; i++) {
+		q.enqueue(input[i])
+	}
+	if (q.check(14)) {
+		return 14 + 1
+	}
+
+	for (let i = 14; i < input.length; i++) {
+		q.enqueue(input[i])
+		q.dequeue()
+		if (q.check(14)) {
+			return i + 1
+		}
+	}
+
 	return "Not implemented";
 }
 
