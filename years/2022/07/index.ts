@@ -20,27 +20,29 @@ interface dir {
 	name: string,
 	files: file[],
 	subdirs: dir[],
-	parent: dir | undefined
+	parent: dir | undefined,
+	size: number
 }
 
 async function p2022day7_part1(input: string, ...params: any[]) {
-	const lines = input.split('\n')
-
+	const lines = input.split('\n');
 
 	const outerDir: dir = {
 		name: '/',
 		files: [],
 		subdirs: [],
-		parent: undefined
+		parent: undefined,
+		size: 0
 	};
-	let currentDir: dir = outerDir
+	let currentDir: dir = outerDir;
 
-	//const len = lines.length
-	const len = 12
+	const len = lines.length;
+	//const len = 12
+	const maxSize = 100000;
 
 	for (let index = 1; index < len; index++) {
 		const line = lines[index].split(' ');
-		console.log(line)
+		//console.log(line)
 
 		if (line[0] === '$') {
 			// command
@@ -51,21 +53,39 @@ async function p2022day7_part1(input: string, ...params: any[]) {
 			} else if (line[1] === 'cd') {
 				// change dir
 				if (line[2] === '/') {
-					currentDir = outerDir
+					// move to outer dir
+					currentDir = outerDir;
 				}
 				else if (line[2] === '..') {
+					// move up
+					if (currentDir.parent) {
 
+						let size = 0;
+						currentDir.files.forEach(f => {
+							size = size + f.size;
+						})
+						currentDir.subdirs.forEach(s => {
+							size = size + s.size;
+						})
+						currentDir.size = size;
+						currentDir = currentDir.parent;
+					}
+					else {
+						console.log('ERORR - parent undefined');
+					}
+				} else {
+					// move to dir X
+					currentDir = currentDir.subdirs.find(x => x.name === line[2])!;
 				}
 			}
-
-
 		} else if (line[0] === 'dir') {
 			// dir
 			const newDir: dir = {
 				name: line[1],
 				files: [],
 				subdirs: [],
-				parent: currentDir
+				parent: currentDir,
+				size: 0
 			}
 			currentDir.subdirs.push(newDir)
 		} else {
@@ -74,15 +94,11 @@ async function p2022day7_part1(input: string, ...params: any[]) {
 				name: line[1],
 				size: Number(line[0])
 			}
-			currentDir.files.push(newFile)
+			currentDir.files.push(newFile);
 		}
-
 	}
-	lines.forEach(line => {
 
-	})
-
-	console.log(currentDir)
+	console.log(outerDir);
 
 	return "Not implemented";
 }
