@@ -13,7 +13,39 @@ const DAY = 10;
 // problem url  : https://adventofcode.com/2022/day/10
 
 async function p2022day10_part1(input: string, ...params: any[]) {
-	return "Not implemented";
+	const arr = input.split('\n')
+
+	let cycles: number[] = []
+	let cycleIndex = 1;
+	let x = 1;
+	cycles.push(x)
+
+	for (let index = 0; index < arr.length; index++) {
+		const str = arr[index];
+		if (str === 'noop') {
+			cycles.push(x)
+		}
+		else {
+			const value = Number(str.replace('addx ', ''))
+			//console.log(value)
+			cycles.push(x)
+			x = x + value
+			cycles.push(x)
+		}
+	}
+
+	let sum = 0;
+
+	for (let i = 0; i < cycles.length; i++) {
+		if (i === 20 || (i - 20) % 40 === 0) {
+			const strength = i * cycles[i - 1]
+			sum = sum + strength
+			//console.log(i, strength)
+		}
+	}
+
+	console.log('cycles', cycles.length)
+	return sum;
 }
 
 async function p2022day10_part2(input: string, ...params: any[]) {
