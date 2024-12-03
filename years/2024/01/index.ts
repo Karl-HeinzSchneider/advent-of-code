@@ -32,13 +32,41 @@ async function p2024day1_part1(input: string, ...params: any[]) {
 		distance = distance + Math.abs(left[i] - right[i]);
 	}
 
-	log(left, right);
+	// log(left, right);
 
 	return distance;
 }
 
 async function p2024day1_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	let left = new Map<number, number>();
+	let right = new Map<number, number>();
+
+	input.split('\n').forEach(str => {
+		const arr = str.split('   ');
+		const newLeft = Number(arr[0]);
+		const newRight = Number(arr[1]);
+
+
+		const currentLeft = left.get(newLeft)
+		left.set(newLeft, currentLeft ? currentLeft + 1 : 1)
+
+		const currentRight = right.get(newRight)
+		right.set(newRight, currentRight ? currentRight + 1 : 1)
+	})
+
+	// log(left, right)
+	let distance = 0;
+
+	for (let [key, value] of left) {
+
+		const rightValue = right.get(key);
+
+		if (rightValue) {
+			distance = distance + value * key * rightValue
+		}
+	}
+
+	return distance;
 }
 
 async function run() {
