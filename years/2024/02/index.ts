@@ -46,8 +46,52 @@ async function p2024day2_part1(input: string, ...params: any[]) {
 	return score;
 }
 
+function isReportSafeWithDamper(input: string): boolean {
+	// #no changes
+	if (isReportSafe(input)) {
+		// log('safe => no changes')
+		return true;
+	}
+
+	const levels = input.split(' ').map(x => Number(x))
+	const length = levels.length
+
+	for (let i = 0; i < length; i++) {
+		// 'toSpliced' only after ES2023
+		// const newLevels = levels.toSpliced(i, 1).join(' ')
+
+		let newLevels = levels.slice()
+		newLevels.splice(i, 1)
+
+		// log(newLevels)
+
+		const newLevelsStr = newLevels.join(' ')
+
+		// ...join  so now refactor of the function from part1
+		if (isReportSafe(newLevelsStr)) {
+			// log('SAFE', newLevelsStr)
+			return true;
+		}
+	}
+
+	return false;
+}
+
 async function p2024day2_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	const reports = input.split('\n')
+	// log(reports)
+
+	let score = 0
+	reports.forEach(rep => {
+		if (isReportSafeWithDamper(rep)) {
+			score = score + 1
+			// log(rep, 'SAFE')
+		}
+		else {
+			// log(rep, 'NOT SAFE')
+		}
+	})
+	return score;
 }
 
 async function run() {
@@ -60,7 +104,15 @@ async function run() {
 1 3 6 7 9`,
 		expected: "2"
 	}];
-	const part2tests: TestCase[] = [];
+	const part2tests: TestCase[] = [{
+		input: `7 6 4 2 1
+1 2 7 8 9
+9 7 6 2 1
+1 3 2 4 5
+8 6 4 4 1
+1 3 6 7 9`,
+		expected: "4"
+	}];;
 
 	// Run tests
 	test.beginTests();
