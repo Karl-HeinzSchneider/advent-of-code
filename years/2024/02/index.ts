@@ -12,8 +12,38 @@ const DAY = 2;
 // data path    : E:\Projects\advent-of-code\years\2024\02\data.txt
 // problem url  : https://adventofcode.com/2024/day/2
 
+function isReportSafe(input: string): boolean {
+	const levels = input.split(' ').map(x => Number(x))
+	const length = levels.length
+
+	let sgn = Math.sign(levels[1] - levels[0])
+
+	for (let i = 0; i < levels.length - 1; i++) {
+		const element = levels[i];
+		const delta = levels[i + 1] - levels[i];
+		if (Math.sign(delta) != sgn) {
+			return false;
+		}
+		const abs = Math.abs(delta)
+		if (abs < 1 || abs > 3) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
 async function p2024day2_part1(input: string, ...params: any[]) {
-	return "Not implemented";
+	const reports = input.split('\n')
+	// log(reports)
+
+	let score = 0
+	reports.forEach(rep => {
+		if (isReportSafe(rep)) {
+			score = score + 1
+		}
+	})
+	return score;
 }
 
 async function p2024day2_part2(input: string, ...params: any[]) {
@@ -21,7 +51,15 @@ async function p2024day2_part2(input: string, ...params: any[]) {
 }
 
 async function run() {
-	const part1tests: TestCase[] = [];
+	const part1tests: TestCase[] = [{
+		input: `7 6 4 2 1
+1 2 7 8 9
+9 7 6 2 1
+1 3 2 4 5
+8 6 4 4 1
+1 3 6 7 9`,
+		expected: "2"
+	}];
 	const part2tests: TestCase[] = [];
 
 	// Run tests
