@@ -13,7 +13,28 @@ const DAY = 1;
 // problem url  : https://adventofcode.com/2024/day/1
 
 async function p2024day1_part1(input: string, ...params: any[]) {
-	return "Not implemented";
+	let left: number[] = [];
+	let right: number[] = [];
+
+	input.split('\n').forEach(str => {
+		const arr = str.split('   ');
+		left.push(Number(arr[0]));
+		right.push(Number(arr[1]));
+	})
+
+	left.sort((a, b) => a - b);
+	right.sort((a, b) => a - b);
+
+	const length = left.length;
+	let distance = 0;
+
+	for (let i = 0; i < length; i++) {
+		distance = distance + Math.abs(left[i] - right[i]);
+	}
+
+	log(left, right);
+
+	return distance;
 }
 
 async function p2024day1_part2(input: string, ...params: any[]) {
@@ -21,8 +42,26 @@ async function p2024day1_part2(input: string, ...params: any[]) {
 }
 
 async function run() {
-	const part1tests: TestCase[] = [];
-	const part2tests: TestCase[] = [];
+	const part1tests: TestCase[] = [
+		{
+			input: `3   4
+					4   3
+					2   5
+					1   3
+					3   9
+					3   3`,
+			expected: "11"
+		}
+	];
+	const part2tests: TestCase[] = [{
+		input: `3   4
+				4   3
+				2   5
+				1   3
+				3   9
+				3   3`,
+		expected: "31"
+	}];
 
 	// Run tests
 	test.beginTests();
