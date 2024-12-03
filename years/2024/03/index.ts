@@ -12,8 +12,29 @@ const DAY = 3;
 // data path    : E:\Projects\advent-of-code\years\2024\03\data.txt
 // problem url  : https://adventofcode.com/2024/day/3
 
+function multiplyMatch(input: string): number {
+
+	const split = input.split(',');
+
+	const firstNumberStr = split[0].replace('mul(', '');
+	const secondNumberStr = split[1].replace(')', '');
+
+	return Number(firstNumberStr) * Number(secondNumberStr);
+}
+
 async function p2024day3_part1(input: string, ...params: any[]) {
-	return "Not implemented";
+	const mulRegex = /mul\(\d*,\d*\)/g
+
+	const matches = [...input.matchAll(mulRegex)].map(m => m[0]);
+
+	let score = 0;
+	matches.forEach(m => {
+		score = score + multiplyMatch(m)
+	})
+
+	// log(matches)
+
+	return score;
 }
 
 async function p2024day3_part2(input: string, ...params: any[]) {
@@ -21,7 +42,7 @@ async function p2024day3_part2(input: string, ...params: any[]) {
 }
 
 async function run() {
-	const part1tests: TestCase[] = [];
+	const part1tests: TestCase[] = [{ input: 'xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))', expected: "161" }];
 	const part2tests: TestCase[] = [];
 
 	// Run tests
