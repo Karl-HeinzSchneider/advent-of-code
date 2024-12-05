@@ -12,8 +12,136 @@ const DAY = 4;
 // data path    : E:\Projects\advent-of-code\years\2024\04\data.txt
 // problem url  : https://adventofcode.com/2024/day/4
 
+function createGrid(input: string): string[][] {
+	let grid: string[][] = [];
+	const rows = input.split('\n');
+
+	rows.forEach(row => {
+		const split = row.split('')
+		grid.push(split)
+	})
+
+	return grid;
+}
+
+function reverseString(input: string): string {
+	return input.split('').reverse().join('');
+}
+
+function countMatches(input: string, searchString: RegExp): number {
+	let score = 0;
+
+	const matches = [...input.matchAll(searchString)].map(m => m[0])
+
+	score = matches.length
+
+	if (score > 0) {
+		// log('Matches:', score, ',str:', input)
+	}
+
+	return score;
+}
+
+function createDiagonalString(grid: string[][], startX: number, startY: number, rows: number, columns: number, dx: number, dy: number): string {
+	let diagonalStr = grid[startX][startY];
+
+	for (let i = 1; i < rows + columns; i++) {
+		const newX = startX + i * dx;
+		// log(newX)
+
+		if (newX < 0 || newX >= rows) {
+			// log('break X', newX)
+			break;
+		}
+
+		const newY = startY + i * dy;
+		if (newY < 0 || newY >= columns) {
+			// log('break Y', newY)
+
+			break;
+		}
+		const nextChar = grid[startX + i * dx][startY + i * dy];
+		diagonalStr = diagonalStr + nextChar;
+	}
+
+	return diagonalStr;
+}
+
 async function p2024day4_part1(input: string, ...params: any[]) {
-	return "Not implemented";
+	const grid = createGrid(input);
+
+	let score = 0;
+
+	const rows = grid.length;
+	const columns = grid[0].length
+	log('rows:', rows, ',columns:', columns)
+
+	const searchFor = /XMAS/g
+
+	// horizontal + reverse
+	for (let i = 0; i < rows; i++) {
+		const row = grid[i];
+		const rowStr = row.join('');
+		const rowStrReverse = reverseString(rowStr);
+
+		// log(rowStr, rowStrReverse)
+		score = score + countMatches(rowStr, searchFor) + countMatches(rowStrReverse, searchFor);
+	}
+
+	// vertical + reverse
+	for (let i = 0; i < columns; i++) {
+		let columnStr = '';
+
+		for (let j = 0; j < rows; j++) {
+			columnStr = columnStr + grid[j][i]
+		}
+
+		const columnStrReverse = reverseString(columnStr);
+
+		// log(columnStr, columnStrReverse)
+		score = score + countMatches(columnStr, searchFor) + countMatches(columnStrReverse, searchFor);
+	}
+
+	// diagonal topleft -> bottomright  + reverse
+	for (let i = 0; i < rows; i++) {
+		// log('row:', i)
+		const diagonalStr = createDiagonalString(grid, i, 0, rows, columns, 1, 1);
+		const diagonalStrReverse = reverseString(diagonalStr);
+
+		// log(diagonalStr)
+
+		score = score + countMatches(diagonalStr, searchFor) + countMatches(diagonalStrReverse, searchFor);
+	}
+	for (let i = 1; i < columns; i++) {
+		const diagonalStr = createDiagonalString(grid, 0, i, rows, columns, 1, 1);
+		const diagonalStrReverse = reverseString(diagonalStr);
+
+		// log(diagonalStr)
+
+		score = score + countMatches(diagonalStr, searchFor) + countMatches(diagonalStrReverse, searchFor);
+	}
+
+	// diagonal topright -> bottomleft  + reverse
+	for (let i = 0; i < columns; i++) {
+		// log('row:', i)
+		// log(0, i)
+		const diagonalStr = createDiagonalString(grid, 0, i, rows, columns, 1, -1);
+		const diagonalStrReverse = reverseString(diagonalStr);
+
+		// log(diagonalStr)
+
+		score = score + countMatches(diagonalStr, searchFor) + countMatches(diagonalStrReverse, searchFor);
+	}
+	for (let i = 1; i < rows; i++) {
+		const diagonalStr = createDiagonalString(grid, i, columns - 1, rows, columns, 1, -1);
+		const diagonalStrReverse = reverseString(diagonalStr);
+
+		// log(diagonalStr)
+
+		score = score + countMatches(diagonalStr, searchFor) + countMatches(diagonalStrReverse, searchFor);
+	}
+
+	return score;
 }
 
 async function p2024day4_part2(input: string, ...params: any[]) {
@@ -21,7 +149,18 @@ async function p2024day4_part2(input: string, ...params: any[]) {
 }
 
 async function run() {
-	const part1tests: TestCase[] = [];
+	const part1tests: TestCase[] = [{
+		input: `MMMSXXMASM
+MSAMXMSMSA
+AMXSXMAAMM
+MSAMASMSMX
+XMASAMXAMM
+XXAMMXXAMA
+SMSMSASXSS
+SAXAMASAAA
+MAMMMXMMMM
+MXMXAXMASX`, expected: "18"
+	}];
 	const part2tests: TestCase[] = [];
 
 	// Run tests
