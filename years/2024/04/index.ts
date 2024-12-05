@@ -145,7 +145,35 @@ async function p2024day4_part1(input: string, ...params: any[]) {
 }
 
 async function p2024day4_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	const grid = createGrid(input);
+
+	let score = 0;
+
+	const rows = grid.length;
+	const columns = grid[0].length
+	log('rows:', rows, ',columns:', columns)
+
+	for (let i = 1; i < rows - 1; i++) {
+		for (let j = 1; j < columns - 1; j++) {
+			const gridChar = grid[i][j];
+
+			if (gridChar == 'A') {
+				const topleft = grid[i - 1][j - 1];
+				const topright = grid[i - 1][j + 1];
+				const bottomleft = grid[i + 1][j - 1];
+				const bottomright = grid[i + 1][j + 1];
+
+				const firstMes = (topleft == 'M' && bottomright == 'S') || (topleft == 'S' && bottomright == 'M')
+				const secondMes = (bottomleft == 'M' && topright == 'S') || (bottomleft == 'S' && topright == 'M')
+
+				if (firstMes && secondMes) {
+					score = score + 1;
+				}
+			}
+		}
+	}
+
+	return score;
 }
 
 async function run() {
@@ -161,7 +189,18 @@ SAXAMASAAA
 MAMMMXMMMM
 MXMXAXMASX`, expected: "18"
 	}];
-	const part2tests: TestCase[] = [];
+	const part2tests: TestCase[] = [{
+		input: `MMMSXXMASM
+MSAMXMSMSA
+AMXSXMAAMM
+MSAMASMSMX
+XMASAMXAMM
+XXAMMXXAMA
+SMSMSASXSS
+SAXAMASAAA
+MAMMMXMMMM
+MXMXAXMASX`, expected: "9"
+	}];
 
 	// Run tests
 	test.beginTests();
