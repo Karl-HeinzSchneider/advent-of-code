@@ -26,7 +26,7 @@ function getLineValue(str: string): number {
 	for (let i = 0; i < Math.pow(2, power); i++) {
 		const inputStr = i.toString(2).padStart(power, '0')
 		// log(i, ':', inputStr)
-		const testValue = calcWithInputString(numArr, inputStr);
+		const testValue = calcWithInputStringBetter(numArr, inputStr);
 		if (testValue == targetValue) {
 			// log('ADD VALUE', targetValue)
 			return targetValue;
@@ -50,6 +50,26 @@ function calcWithInputString(numArr: number[], inputstr: string): number {
 		}
 	}
 	score = eval(str)
+
+	// log(str, ' = ', score)
+
+	return score;
+}
+
+function calcWithInputStringBetter(numArr: number[], inputstr: string): number {
+	let score = numArr[0];
+
+	for (let i = 1; i < numArr.length; i++) {
+		if (inputstr.charAt(i - 1) == '0') {
+			// str = '(' + str + '+' + numArr[i] + ')';
+			score = score + numArr[i];
+		}
+		else {
+			// str = '(' + str + '*' + numArr[i] + ')';
+			score = score * numArr[i];
+		}
+	}
+	// score = eval(str)
 
 	// log(str, ' = ', score)
 
@@ -82,7 +102,7 @@ function getLineValueConcat(str: string): number {
 	for (let i = 0; i < Math.pow(3, power); i++) {
 		const inputStr = i.toString(3).padStart(power, '0')
 		// log(i, ':', inputStr)
-		const testValue = calcWithInputStringConcat(numArr, inputStr);
+		const testValue = calcWithInputStringConcatBetter(numArr, inputStr);
 		if (testValue == targetValue) {
 			// log('ADD VALUE', targetValue)
 			return targetValue;
@@ -113,6 +133,35 @@ function calcWithInputStringConcat(numArr: number[], inputstr: string): number {
 		}
 	}
 	score = eval(str)
+
+	// log(str, ' = ', score)
+
+	return score;
+}
+
+function calcWithInputStringConcatBetter(numArr: number[], inputstr: string): number {
+	let score = numArr[0];
+
+	for (let i = 1; i < numArr.length; i++) {
+		const operatorChar = inputstr.charAt(i - 1)
+		if (operatorChar == '0') {
+			// +
+			// str = '(' + str + '+' + numArr[i] + ')';
+			score = score + numArr[i];
+		}
+		else if (operatorChar == '1') {
+			// *
+			// str = '(' + str + '*' + numArr[i] + ')';
+			score = score * numArr[i];
+		}
+		else {
+			// ||
+			// str = '(' + eval(str).toString() + numArr[i] + ')'
+			const concatStr = score.toString() + numArr[i];
+			score = Number(concatStr);
+		}
+	}
+	// score = eval(str)
 
 	// log(str, ' = ', score)
 
