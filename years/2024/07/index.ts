@@ -12,8 +12,60 @@ const DAY = 7;
 // data path    : E:\Projects\advent-of-code\years\2024\07\data.txt
 // problem url  : https://adventofcode.com/2024/day/7
 
+// 0 when its not possible to combine
+function getLineValue(str: string): number {
+	const split = str.split(': ')
+
+	const targetValue = Number(split[0])
+	const numArr: number[] = split[1].split(' ').map(x => Number(x));
+
+	// log(targetValue, numArr)
+
+	const power = numArr.length - 1;
+
+	for (let i = 0; i < Math.pow(2, power); i++) {
+		const inputStr = i.toString(2).padStart(power, '0')
+		// log(i, ':', inputStr)
+		const testValue = calcWithInputString(numArr, inputStr);
+		if (testValue == targetValue) {
+			// log('ADD VALUE', targetValue)
+			return targetValue;
+		}
+	}
+
+	return 0;
+}
+
+function calcWithInputString(numArr: number[], inputstr: string): number {
+	let score = 0;
+
+	let str = '' + numArr[0]
+
+	for (let i = 1; i < numArr.length; i++) {
+		if (inputstr.charAt(i - 1) == '0') {
+			str = '(' + str + '+' + numArr[i] + ')';
+		}
+		else {
+			str = '(' + str + '*' + numArr[i] + ')';
+		}
+	}
+	score = eval(str)
+
+	// log(str, ' = ', score)
+
+	return score;
+}
+
 async function p2024day7_part1(input: string, ...params: any[]) {
-	return "Not implemented";
+	const lines = input.split('\n');
+
+	let score = 0;
+	lines.forEach(l => {
+		score = score + getLineValue(l);
+		// log('~~~~')
+	})
+
+	return score;
 }
 
 async function p2024day7_part2(input: string, ...params: any[]) {
@@ -21,7 +73,17 @@ async function p2024day7_part2(input: string, ...params: any[]) {
 }
 
 async function run() {
-	const part1tests: TestCase[] = [];
+	const part1tests: TestCase[] = [{
+		input: `190: 10 19
+3267: 81 40 27
+83: 17 5
+156: 15 6
+7290: 6 8 6 15
+161011: 16 10 13
+192: 17 8 14
+21037: 9 7 18 13
+292: 11 6 16 20`, expected: '3749'
+	}];
 	const part2tests: TestCase[] = [];
 
 	// Run tests
@@ -37,6 +99,8 @@ async function run() {
 		}
 	});
 	test.endTests();
+
+	// if (true) return;
 
 	// Get input and run program while measuring performance
 	const input = await util.getInput(DAY, YEAR);
