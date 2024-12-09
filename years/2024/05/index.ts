@@ -110,8 +110,82 @@ async function p2024day5_part1(input: string, ...params: any[]) {
 	return score;
 }
 
+function orderUpdate(update: number[], rulesMap: Map<number, number[]>, rules: { x: number, y: number }[]): number[] {
+	let ordered: number[] = [];
+
+	const relevantRules = rules.filter(rule => {
+		return update.includes(rule.x) && update.includes(rule.y)
+	})
+	// log(update)
+	// log(relevantRules);
+
+	const length = update.length;
+	for (let i = 0; i < length; i++) {
+		const current = update[i]
+
+		const amount = relevantRules.filter(rule => rule.x == current).length;
+		ordered[length - amount - 1] = current;
+	}
+
+	return ordered;
+}
+
 async function p2024day5_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	const lines = input.split('\n');
+
+	let stillRules = true;
+	const rules: { x: number, y: number }[] = [];
+	const rulemap = new Map<number, number[]>();
+	const updates: number[][] = [];
+
+	lines.forEach(l => {
+		if (l == '') {
+			// empty line seperator
+			stillRules = false;
+		}
+		else if (stillRules) {
+			// first part
+			const tmp = l.split('|')
+			const rule = { x: Number(tmp[0]), y: Number(tmp[1]) }
+			rules.push(rule)
+
+			const current = rulemap.get(rule.x);
+			if (current) {
+				rulemap.set(rule.x, [...current, rule.y])
+			}
+			else {
+				rulemap.set(rule.x, [rule.y])
+			}
+		}
+		else {
+			// second part
+			const tmp = l.split(',').map(x => Number(x))
+			updates.push(tmp)
+		}
+	})
+
+	let score = 0;
+	for (let i = 0; i < updates.length; i++) {
+		const up = updates[i]
+			;
+		// log('------------------------')
+		// log(up)
+		if (isUpdateInRightOrder(up, rulemap)) {
+			// log('RIGHT ORDER', up)
+			// do nothing this time
+		}
+		else {
+			// wrong order
+			// log('WRONG ORDER', up)
+			const ordered = orderUpdate(up, rulemap, rules);
+			// log('ordered:', ordered)
+			const middle = ordered[Math.floor(ordered.length / 2)]
+			score = score + middle
+		}
+	}
+
+
+	return score;
 }
 
 async function run() {
@@ -145,7 +219,36 @@ async function run() {
 61,13,29
 97,13,75,29,47`, expected: "143"
 	}];
-	const part2tests: TestCase[] = [];
+	const part2tests: TestCase[] = [{
+		input: `47|53
+97|13
+97|61
+97|47
+75|29
+61|13
+75|53
+29|13
+97|29
+53|29
+61|53
+97|53
+61|29
+47|13
+75|47
+97|75
+47|61
+75|61
+47|29
+75|13
+53|13
+
+75,47,61,53,29
+97,61,53,29,13
+75,29,13
+75,97,47,61,53
+61,13,29
+97,13,75,29,47`, expected: "123"
+	}];
 
 	// Run tests
 	test.beginTests();
@@ -160,6 +263,8 @@ async function run() {
 		}
 	});
 	test.endTests();
+
+	// if (true) { return; }
 
 	// Get input and run program while measuring performance
 	const input = await util.getInput(DAY, YEAR);
