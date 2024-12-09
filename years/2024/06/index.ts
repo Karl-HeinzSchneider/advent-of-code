@@ -114,7 +114,114 @@ async function p2024day6_part1(input: string, ...params: any[]) {
 }
 
 async function p2024day6_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	const { grid, start } = createGrid(input);
+	log('Found start at: ', start)
+
+	const width = grid[0].length;
+	const height = grid.length;
+	log('w:', width, ', h:', height)
+
+	type GuardDirections = '^' | '>' | 'v' | '<'
+	const guardDict = {
+		'^': { x: -1, y: 0 },
+		'>': { x: 0, y: 1 },
+		'v': { x: 1, y: 0 },
+		'<': { x: 0, y: -1 },
+	}
+	const guardDictNextMove = {
+		'^': '>',
+		'>': 'v',
+		'v': '<',
+		'<': '^'
+	}
+
+	grid[start.x][start.y] = 'X'
+
+	if (!isInsideGrid(start, width, height)) {
+		return 0;
+	}
+	// if (true) return 0;
+
+	function isInLoop(newObstacle: { x: number, y: number }): boolean {
+		// TODO: couldn't pass the grid as copy => slow ~13s
+		const { grid, start } = createGrid(input);
+		grid[start.x][start.y] = 'X'
+
+		let guardDir: GuardDirections = '^'
+		let guard = start;
+		let score = 1;
+
+		grid[newObstacle.x][newObstacle.y] = '#'
+
+		const loopMap = new Map<string, boolean>();
+		loopMap.set(`${guard.x}-${guard.y}-${guardDir}`, true);
+
+		while (true) {
+			const guardDeltaPos = guardDict[guardDir]
+			const nextPosition = { x: guard.x + guardDeltaPos.x, y: guard.y + guardDeltaPos.y }
+			// log('current:', guard, 'next:', nextPosition)
+
+			if (!isInsideGrid(nextPosition, width, height)) {
+				// log('--> no loop:', score)
+				return false;
+			}
+
+			const nextStr = grid[nextPosition.x][nextPosition.y];
+
+			if (nextStr == '.') {
+				// normal field
+				// log('-> normal field')
+				guard = nextPosition;
+				grid[guard.x][guard.y] = 'X'
+				score = score + 1;
+			}
+			else if (nextStr == 'X') {
+				// normal field but already visited
+				// log('-> visited field')
+				guard = nextPosition;
+			}
+			else if (nextStr == '#') {
+				// obstacle
+				// log('-> BLOCKED')
+				guardDir = guardDictNextMove[guardDir] as GuardDirections;
+			}
+			else {
+				// log('fail??');
+				// return score;
+			}
+			// log('~~~~~~~~~~~~~')
+
+			// check loop
+			if (loopMap.has(`${guard.x}-${guard.y}-${guardDir}`)) {
+				return true;
+			}
+			loopMap.set(`${guard.x}-${guard.y}-${guardDir}`, true);
+		}
+		return true;
+	}
+
+	let score = 0;
+	for (let i = 0; i < height; i++) {
+		for (let j = 0; j < width; j++) {
+			if (i == start.x && j == start.y) {
+				// start => skip
+				// log(i, j, '-> skip start')
+			}
+			else if (grid[i][j] == '#') {
+				// already blocked => skip
+				// log(i, j, '-> skip blocked')
+			}
+			else {
+				// log(i, j, '')
+				const looping = isInLoop({ x: i, y: j });
+				if (looping) {
+					// log('----> looping')
+					score = score + 1
+				}
+			}
+		}
+	}
+	return score;
 }
 
 async function run() {
@@ -133,7 +240,19 @@ async function run() {
 ......#...`, expected: "41"
 		}
 	];
-	const part2tests: TestCase[] = [];
+	const part2tests: TestCase[] = [{
+		input:
+			`....#.....
+.........#
+..........
+..#.......
+.......#..
+..........
+.#..^.....
+........#.
+#.........
+......#...`, expected: "6"
+	}];
 
 	// Run tests
 	test.beginTests();
