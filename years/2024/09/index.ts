@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _, { first } from "lodash";
 import * as util from "../../../util/util";
 import * as test from "../../../util/test";
 import chalk from "chalk";
@@ -92,13 +92,121 @@ async function p2024day9_part1(input: string, ...params: any[]) {
 	return score;
 }
 
+function defragPartTwo(input: string): number {
+	const inputLength = input.length;
+
+	interface block {
+		size: number,
+		fileID: number
+	}
+
+	let blockArr: block[] = [];
+	let fileID = 0;
+
+	for (let i = 0; i < inputLength; i++) {
+		const currentBlock = Number(input.charAt(i));
+		// log(currentChar) 
+		if (i % 2 == 0) {
+			// file
+			blockArr.push({ size: currentBlock, fileID: fileID });
+			fileID = fileID + 1;
+		}
+		else {
+			// space
+			blockArr.push({ size: currentBlock, fileID: -1 });
+		}
+	}
+	// log(blockArr)
+
+	function printBlockArrAsString(arr: block[]) {
+		let str = ''
+		arr.forEach(block => {
+			for (let i = 0; i < block.size; i++) {
+				str = str + block.fileID.toString().replace('-1', '.');
+			}
+		})
+		log(str)
+	}
+	// printBlockArrAsString(blockArr);
+
+	const blockArrLen = blockArr.length
+	// printBlockArrAsString(blockArr)
+	// log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+	for (let i = blockArrLen - 1; i > 0; i--) {
+		const currentBlock: block = { ...blockArr[i] };
+		if (currentBlock.fileID < 0) {
+			continue;
+		}
+		// log('block:', currentBlock)
+		const firstIndex = blockArr.findIndex(b => b.fileID == -1 && b.size >= currentBlock.size);
+		if (firstIndex < 0) {
+			// log('-> NO SPACE -> dont move')
+			// log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+			// return -1;
+			continue;
+		}
+		// log('i', i, ', firstIndex:', firstIndex)
+		if (firstIndex < i) {
+			const foundBlock = { ...blockArr[firstIndex] }
+			const foundSpace = foundBlock.size;
+			const sizeDelta = foundSpace - currentBlock.size;
+			if (sizeDelta == 0) {
+				// using all the space
+				blockArr[firstIndex] = currentBlock;
+				blockArr[i] = { size: currentBlock.size, fileID: -1 }
+			}
+			else {
+				// free space is bigger
+				blockArr[firstIndex].size = sizeDelta;
+				blockArr[i] = { size: currentBlock.size, fileID: -1 };
+				blockArr.splice(firstIndex, 0, currentBlock);
+				i = i + 1;
+			}
+			// blockArr[firstIndex] = currentBlock;
+			// blockArr[i] = -1
+			// printBlockArrAsString(blockArr)
+			// log(blockArr)
+		}
+		else {
+			// log('break')
+			// log(blockArr)
+			// break;
+		}
+		// log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+	}
+
+	let score = 0;
+	let index = 0;
+	const finishedArrLen = blockArr.length;
+
+	for (let i = 0; i < finishedArrLen; i++) {
+		const currentBlock = blockArr[i];
+		if (currentBlock.fileID < 0) {
+			index = index + currentBlock.size;
+			continue;
+		}
+
+		for (let k = 0; k < currentBlock.size; k++) {
+			const mult = index * currentBlock.fileID;
+			// log(index, '*', currentBlock.fileID, '=', mult)
+
+			score = score + mult;
+			index = index + 1;
+		}
+	}
+
+	return score;
+}
+
 async function p2024day9_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	const score = defragPartTwo(input);
+
+	return score;
 }
 
 async function run() {
 	const part1tests: TestCase[] = [{ input: `2333133121414131402`, expected: "1928" }];
-	const part2tests: TestCase[] = [];
+	const part2tests: TestCase[] = [{ input: `2333133121414131402`, expected: "2858" }];
 
 	// Run tests
 	test.beginTests();
