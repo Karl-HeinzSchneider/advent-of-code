@@ -11,9 +11,88 @@ const DAY = 8;
 // solution path: E:\Projects\advent-of-code\years\2024\08\index.ts
 // data path    : E:\Projects\advent-of-code\years\2024\08\data.txt
 // problem url  : https://adventofcode.com/2024/day/8
+interface Vector2D { x: number, y: number };
 
 async function p2024day8_part1(input: string, ...params: any[]) {
-	return "Not implemented";
+	let grid = new Map<Vector2D, string>();
+	let towerMap = new Map<string, Vector2D[]>();
+	const lines = input.split('\n');
+
+	const heigth = lines.length;
+	const width = lines[0].length;
+
+	for (let i = 0; i < heigth; i++) {
+		for (let j = 0; j < width; j++) {
+			const current = lines[i][j];
+			const coords: Vector2D = { x: i, y: j };
+			grid.set(coords, current);
+			if (current == '.') {
+				continue;
+			}
+
+			const mapEntry = towerMap.get(current);
+			if (mapEntry) {
+				towerMap.set(current, [...mapEntry, coords]);
+			}
+			else {
+				towerMap.set(current, [coords]);
+			}
+		}
+	}
+
+	// log(towerMap)
+	// log(width, heigth)
+
+	function isInsideGrid(pos: Vector2D): boolean {
+		if (pos.x < 0 || pos.x >= heigth || pos.y < 0 || pos.y >= width) {
+			return false;
+		}
+		return true;
+	}
+
+	const antiNodesMap = new Map<string, boolean>();
+
+	const towerMapKey = towerMap.keys();
+	for (const towerType of towerMapKey) {
+		// log('TowerType:', towerType);
+		const coords = towerMap.get(towerType)!;
+		const coordsLen = coords.length;
+		for (let i = 0; i < coordsLen; i++) {
+			const currentCoord = coords[i];
+			// log('current:', currentCoord)
+			for (let k = i + 1; k < coordsLen; k++) {
+				const other = coords[k];
+				// log(other)
+
+				const delta: Vector2D = { x: other.x - currentCoord.x, y: other.y - currentCoord.y };
+				// log('-> delta:', delta)
+				const antiOne: Vector2D = { x: currentCoord.x + 2 * delta.x, y: currentCoord.y + 2 * delta.y }
+				const antiTwo: Vector2D = { x: currentCoord.x + -1 * delta.x, y: currentCoord.y + -1 * delta.y }
+
+				// log('-> antiOne:', antiOne, '--->', isInsideGrid(antiOne))
+				if (isInsideGrid(antiOne)) {
+					antiNodesMap.set(`${antiOne.x}-${antiOne.y}`, true);
+					// log('-> antiOne:', antiOne)
+					// log('---> inside')
+				}
+
+				// log('-> antiTwo:', antiTwo, '--->', isInsideGrid(antiTwo))
+
+				if (isInsideGrid(antiTwo)) {
+					antiNodesMap.set(`${antiTwo.x}-${antiTwo.y}`, true);
+					// log('-> antiTwo:', antiTwo)
+					// log('---> inside')
+				}
+				// log('.................')
+			}
+			// log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+		}
+	}
+	// log(antiNodesMap)
+
+	const numAntinodes = antiNodesMap.size;
+
+	return numAntinodes;
 }
 
 async function p2024day8_part2(input: string, ...params: any[]) {
@@ -21,7 +100,20 @@ async function p2024day8_part2(input: string, ...params: any[]) {
 }
 
 async function run() {
-	const part1tests: TestCase[] = [];
+	const part1tests: TestCase[] = [{
+		input: `............
+........0...
+.....0......
+.......0....
+....0.......
+......A.....
+............
+............
+........A...
+.........A..
+............
+............`, expected: "14"
+	}];
 	const part2tests: TestCase[] = [];
 
 	// Run tests
