@@ -96,7 +96,91 @@ async function p2024day8_part1(input: string, ...params: any[]) {
 }
 
 async function p2024day8_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	let grid = new Map<Vector2D, string>();
+	let towerMap = new Map<string, Vector2D[]>();
+	const lines = input.split('\n');
+
+	const heigth = lines.length;
+	const width = lines[0].length;
+
+	for (let i = 0; i < heigth; i++) {
+		for (let j = 0; j < width; j++) {
+			const current = lines[i][j];
+			const coords: Vector2D = { x: i, y: j };
+			grid.set(coords, current);
+			if (current == '.') {
+				continue;
+			}
+
+			const mapEntry = towerMap.get(current);
+			if (mapEntry) {
+				towerMap.set(current, [...mapEntry, coords]);
+			}
+			else {
+				towerMap.set(current, [coords]);
+			}
+		}
+	}
+
+	function isInsideGrid(pos: Vector2D): boolean {
+		if (pos.x < 0 || pos.x >= heigth || pos.y < 0 || pos.y >= width) {
+			return false;
+		}
+		return true;
+	}
+
+
+	// log(towerMap)
+	// log(width, heigth)
+
+	const antiNodesMap = new Map<string, boolean>();
+
+	const towerMapKey = towerMap.keys();
+	for (const towerType of towerMapKey) {
+		// log('TowerType:', towerType);
+		const coords = towerMap.get(towerType)!;
+		const coordsLen = coords.length;
+		for (let i = 0; i < coordsLen; i++) {
+			const currentCoord = coords[i];
+			if (coordsLen > 0) {
+				// tower itself is antinode
+				antiNodesMap.set(`${currentCoord.x}-${currentCoord.y}`, true);
+			}
+			// log('current:', currentCoord)
+			for (let k = i + 1; k < coordsLen; k++) {
+				const other = coords[k];
+				// log(other)
+
+				const delta: Vector2D = { x: other.x - currentCoord.x, y: other.y - currentCoord.y };
+				// log('-> delta:', delta)
+				let antiOne: Vector2D = { x: currentCoord.x + 2 * delta.x, y: currentCoord.y + 2 * delta.y }
+
+				while (isInsideGrid(antiOne)) {
+					// log('-> antiOne:', antiOne, '--->', isInsideGrid(antiOne))
+					antiNodesMap.set(`${antiOne.x}-${antiOne.y}`, true);
+					antiOne = { x: antiOne.x + delta.x, y: antiOne.y + delta.y }
+				}
+				// log('-> antiOne:', antiOne, '--->', isInsideGrid(antiOne))
+
+
+				let antiTwo: Vector2D = { x: currentCoord.x + -1 * delta.x, y: currentCoord.y + -1 * delta.y }
+				while (isInsideGrid(antiTwo)) {
+					// log('-> antiTwo:', antiTwo, '--->', isInsideGrid(antiTwo))
+					antiNodesMap.set(`${antiTwo.x}-${antiTwo.y}`, true);
+					antiTwo = { x: antiTwo.x + -1 * delta.x, y: antiTwo.y + -1 * delta.y }
+				}
+				// log('-> antiTwo:', antiTwo, '--->', isInsideGrid(antiTwo))
+
+				// log('.................')
+			}
+			// log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+		}
+	}
+	// log(antiNodesMap)
+
+	const numAntinodes = antiNodesMap.size;
+
+	return numAntinodes;
 }
 
 async function run() {
@@ -114,7 +198,20 @@ async function run() {
 ............
 ............`, expected: "14"
 	}];
-	const part2tests: TestCase[] = [];
+	const part2tests: TestCase[] = [{
+		input: `............
+........0...
+.....0......
+.......0....
+....0.......
+......A.....
+............
+............
+........A...
+.........A..
+............
+............`, expected: "34"
+	}];;
 
 	// Run tests
 	test.beginTests();
