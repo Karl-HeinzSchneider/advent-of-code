@@ -89,8 +89,76 @@ async function p2024day13_part1(input: string, ...params: any[]) {
 	return prize;
 }
 
+function Det(M: number[]): number {
+	return M[0] * M[3] - M[1] * M[2]
+}
+
+function Cramer([A, B, P]: Vector2D[]): number {
+	const M = [A.x, B.x, A.y, B.y]
+	const detM = Det(M)
+
+	const M1 = [P.x, B.x, P.y, B.y]
+	const detM1 = Det(M1)
+
+	const M2 = [A.x, P.x, A.y, P.y]
+	const detM2 = Det(M2)
+
+	const x1 = detM1 / detM
+	const x2 = detM2 / detM
+
+	// log(x1, x2)
+
+	if (x1 < 0 || x2 < 0) {
+		return Number.MAX_SAFE_INTEGER;
+	}
+
+	if (Number.isInteger(x1) && Number.isInteger(x2)) {
+		return 3 * x1 + 1 * x2
+	}
+
+
+	return Number.MAX_SAFE_INTEGER;
+}
+
+
 async function p2024day13_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	const split = input.split('\n').filter(x => x != '')
+	const len = split.length
+	// log(split)
+
+	const clawMachines: Vector2D[][] = []
+
+	const delta = 10000000000000;
+
+	for (let i = 0; i < len / 3; i++) {
+		// Button A: X+94, Y+34
+		let btnA = split[i * 3].split(',')
+		// log(Number((btnA[0].split('X+'))[1]))
+		const A: Vector2D = { x: Number((btnA[0].split('X+'))[1]), y: Number((btnA[1].split('Y+'))[1]) }
+		// log(A)
+
+		let btnB = split[i * 3 + 1].split(',')
+		const B: Vector2D = { x: Number((btnB[0].split('X+'))[1]), y: Number((btnB[1].split('Y+'))[1]) }
+
+		let prize = split[i * 3 + 2].split(',')
+		const P: Vector2D = { x: Number((prize[0].split('X='))[1]) + delta, y: Number((prize[1].split('Y='))[1]) + delta }
+
+		// log(btnA, btnB, prize)
+		// log(A, B, P)
+		clawMachines.push([A, B, P])
+	}
+	// log(clawMachines)
+
+	let prize = 0;
+
+	clawMachines.forEach(m => {
+		const lrScore = Cramer(m)
+		if (lrScore < Number.MAX_SAFE_INTEGER) {
+			prize = prize + lrScore
+		}
+	})
+
+	return prize;
 }
 
 async function run() {
