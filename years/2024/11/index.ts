@@ -12,16 +12,158 @@ const DAY = 11;
 // data path    : E:\Projects\advent-of-code\years\2024\11\data.txt
 // problem url  : https://adventofcode.com/2024/day/11
 
+interface Vector2D { x: number, y: number };
+
 async function p2024day11_part1(input: string, ...params: any[]) {
-	return "Not implemented";
+	const split = input.split(' ').map(x => Number(x))
+	// log(split)
+
+	// x = current, y= nextDay
+	let stoneMap = new Map<number, number>();
+
+	function increaseStoneCount(mapRef: Map<number, number>, stone: number, howMany: number) {
+		const current = mapRef.get(stone)
+		if (current) {
+			const newCount = current + howMany;
+			mapRef.set(stone, newCount);
+		}
+		else {
+			mapRef.set(stone, howMany);
+		}
+	}
+
+	function countStones(mapRef: Map<number, number>): number {
+		let score = 0;
+		for (let [stone, amount] of mapRef) {
+			score = score + amount
+		}
+
+		return score;
+	}
+
+	split.forEach(s => {
+		increaseStoneCount(stoneMap, s, 1);
+	})
+	// log(stoneMap)
+	// log('~~~~~~~~')
+
+	const blinks = 25;
+	let count = 0;
+
+	for (let i = 0; i < blinks; i++) {
+		let nextDay = new Map<number, number>();
+
+		for (let [stone, amount] of stoneMap) {
+			// log(stone, amount)
+			const current = stoneMap.get(stone)! // must exist as its from the map
+			if (stone == 0) {
+				increaseStoneCount(nextDay, 1, current);
+			}
+			else {
+				const numberStr = String(stone);
+				if (numberStr.length % 2 == 0) {
+					const first = numberStr.substring(0, numberStr.length / 2)
+					const second = numberStr.substring(numberStr.length / 2, numberStr.length)
+					// log(first, second)
+					increaseStoneCount(nextDay, Number(first), current);
+					increaseStoneCount(nextDay, Number(second), current);
+				}
+				else {
+					increaseStoneCount(nextDay, stone * 2024, current);
+
+				}
+			}
+		}
+
+		stoneMap = nextDay;
+		// log(stoneMap)
+		// count = countStones(stoneMap);
+		// log(count)
+		// log('~~~~~~~~')
+	}
+	count = countStones(stoneMap);
+
+
+
+	return count;
 }
 
 async function p2024day11_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	const split = input.split(' ').map(x => Number(x))
+	// log(split)
+
+	// x = current, y= nextDay
+	let stoneMap = new Map<number, number>();
+
+	function increaseStoneCount(mapRef: Map<number, number>, stone: number, howMany: number) {
+		const current = mapRef.get(stone)
+		if (current) {
+			const newCount = current + howMany;
+			mapRef.set(stone, newCount);
+		}
+		else {
+			mapRef.set(stone, howMany);
+		}
+	}
+
+	function countStones(mapRef: Map<number, number>): number {
+		let score = 0;
+		for (let [stone, amount] of mapRef) {
+			score = score + amount
+		}
+
+		return score;
+	}
+
+	split.forEach(s => {
+		increaseStoneCount(stoneMap, s, 1);
+	})
+	// log(stoneMap)
+	// log('~~~~~~~~')
+
+	const blinks = 75;
+	let count = 0;
+
+	for (let i = 0; i < blinks; i++) {
+		let nextDay = new Map<number, number>();
+
+		for (let [stone, amount] of stoneMap) {
+			// log(stone, amount)
+			const current = stoneMap.get(stone)! // must exist as its from the map
+			if (stone == 0) {
+				increaseStoneCount(nextDay, 1, current);
+			}
+			else {
+				const numberStr = String(stone);
+				if (numberStr.length % 2 == 0) {
+					const first = numberStr.substring(0, numberStr.length / 2)
+					const second = numberStr.substring(numberStr.length / 2, numberStr.length)
+					// log(first, second)
+					increaseStoneCount(nextDay, Number(first), current);
+					increaseStoneCount(nextDay, Number(second), current);
+				}
+				else {
+					increaseStoneCount(nextDay, stone * 2024, current);
+
+				}
+			}
+		}
+
+		stoneMap = nextDay;
+		// log(stoneMap)
+		// count = countStones(stoneMap);
+		// log(count)
+		// log('~~~~~~~~')
+	}
+	count = countStones(stoneMap);
+
+
+
+	return count;
 }
 
 async function run() {
-	const part1tests: TestCase[] = [];
+	const part1tests: TestCase[] = [{ input: `125 17`, expected: "55312" }];
 	const part2tests: TestCase[] = [];
 
 	// Run tests
