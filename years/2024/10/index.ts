@@ -11,9 +11,48 @@ const DAY = 10;
 // solution path: E:\Projects\advent-of-code\years\2024\10\index.ts
 // data path    : E:\Projects\advent-of-code\years\2024\10\data.txt
 // problem url  : https://adventofcode.com/2024/day/10
+interface Vector2D { x: number, y: number };
 
 async function p2024day10_part1(input: string, ...params: any[]) {
-	return "Not implemented";
+	let grid = new Map<Vector2D, string>();
+	let towerMap = new Map<string, Vector2D[]>();
+	const lines = input.split('\n');
+
+	const heigth = lines.length;
+	const width = lines[0].length;
+
+	for (let i = 0; i < heigth; i++) {
+		for (let j = 0; j < width; j++) {
+			const current = lines[i][j];
+			const coords: Vector2D = { x: i, y: j };
+			grid.set(coords, current);
+			if (current == '.') {
+				continue;
+			}
+
+			const mapEntry = towerMap.get(current);
+			if (mapEntry) {
+				towerMap.set(current, [...mapEntry, coords]);
+			}
+			else {
+				towerMap.set(current, [coords]);
+			}
+		}
+	}
+
+	// log(towerMap)
+	// log(width, heigth)
+
+	function isInsideGrid(pos: Vector2D): boolean {
+		if (pos.x < 0 || pos.x >= heigth || pos.y < 0 || pos.y >= width) {
+			return false;
+		}
+		return true;
+	}
+
+	let score = 0;
+
+	return score;
 }
 
 async function p2024day10_part2(input: string, ...params: any[]) {
@@ -21,7 +60,16 @@ async function p2024day10_part2(input: string, ...params: any[]) {
 }
 
 async function run() {
-	const part1tests: TestCase[] = [];
+	const part1tests: TestCase[] = [{
+		input: `89010123
+78121874
+87430965
+96549874
+45678903
+32019012
+01329801
+10456732`, expected: "36"
+	}];
 	const part2tests: TestCase[] = [];
 
 	// Run tests
@@ -42,14 +90,14 @@ async function run() {
 	const input = await util.getInput(DAY, YEAR);
 
 	const part1Before = performance.now();
-	const part1Solution = String(await p2024day10_part1(input));
+	// const part1Solution = String(await p2024day10_part1(input));
 	const part1After = performance.now();
 
 	const part2Before = performance.now()
 	const part2Solution = String(await p2024day10_part2(input));
 	const part2After = performance.now();
 
-	logSolution(10, 2024, part1Solution, part2Solution);
+	// logSolution(10, 2024, part1Solution, part2Solution);
 
 	log(chalk.gray("--- Performance ---"));
 	log(chalk.gray(`Part 1: ${util.formatTime(part1After - part1Before)}`));
