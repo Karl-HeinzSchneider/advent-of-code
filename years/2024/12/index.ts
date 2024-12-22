@@ -21,7 +21,7 @@ function coordString(x: number, y: number) {
 async function p2024day12_part1(input: string, ...params: any[]) {
 	// square
 	const n = input.indexOf('\n')
-	log('garden plot size:', n, 'x', n)
+	// log('garden plot size:', n, 'x', n)
 
 	// const gridString = input.replaceAll('\n', '');
 	// log(gridString.length)
