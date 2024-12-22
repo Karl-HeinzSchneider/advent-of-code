@@ -114,7 +114,100 @@ async function p2024day10_part1(input: string, ...params: any[]) {
 }
 
 async function p2024day10_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	// square
+	// const n = input.indexOf('\n')
+	// log(params)
+	if (params && params[0]) {
+		log('~> skip test case')
+		return "Not implemented / SKIPPED";
+	}
+
+	const gridMap = new Map<string, number>();
+	const rows = input.split('\n');
+
+	const headArr = []
+
+	for (let i = 0; i < rows.length; i++) {
+		const row = rows[i];
+
+		for (let j = 0; j < row.length; j++) {
+			const current = row[j]
+			gridMap.set(coordString(i, j), Number(current))
+			if (current == '0') {
+				headArr.push([i, j])
+			}
+		}
+	}
+	// log(gridMap)
+	// log(headArr)
+
+	function areCoordsValid(x: number, y: number) {
+		return gridMap.has(coordString(x, y,))
+	}
+
+	function getCoord(x: number, y: number) {
+		return gridMap.get(coordString(x, y))
+	}
+
+	function setCoord(x: number, y: number, value: number) {
+		return gridMap.set(coordString(x, y), value)
+	}
+
+	const targetValue = 9;
+	const dxdy: number[][] = [[-1, 0], [1, 0], [0, 1], [0, -1]]
+
+	function search(i: number, j: number) {
+		const targetArr: string[] = [];
+
+		function searchTrails(i: number, j: number, currentValue: number) {
+			// log('searchTrails', i, j, currentValue)
+			if (!areCoordsValid(i, j)) {
+				// log('SearchTrails', '(', i, ',', j, ')', 'type:', 'INVALID COORDS')
+				return 0;
+			}
+			const value = getCoord(i, j)!; // must exist because valid coords
+			// log('SearchTrails', '(', i, ',', j, ')', 'value:', value)
+
+			if (value == targetValue) {
+				// target reached
+				targetArr.push(coordString(i, j));
+				return 1;
+			}
+
+			let trails = 0;
+			dxdy.forEach(([dx, dy]) => {
+				const newX = i + dx;
+				const newY = j + dy;
+				// log('dxdy', newX, newY)
+				if (areCoordsValid(newX, newY) && getCoord(newX, newY) === currentValue + 1) {
+					trails = trails + searchTrails(newX, newY, currentValue + 1);
+				}
+			})
+
+			return trails;
+		}
+
+		searchTrails(i, j, 0);
+
+		const targetSet = new Set(targetArr);
+
+		return targetArr.length;
+	}
+
+
+
+	// const tmp = search(headArr[0][0], headArr[0][1])
+	// log(tmp)
+
+	let score = 0;
+	headArr.forEach(h => {
+		const searchSet = search(h[0], h[1]);
+
+		score = score + searchSet
+	})
+
+
+	return score;
 }
 
 async function run() {
