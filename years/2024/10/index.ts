@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _, { head } from "lodash";
 import * as util from "../../../util/util";
 import * as test from "../../../util/test";
 import chalk from "chalk";
@@ -11,46 +11,104 @@ const DAY = 10;
 // solution path: E:\Projects\advent-of-code\years\2024\10\index.ts
 // data path    : E:\Projects\advent-of-code\years\2024\10\data.txt
 // problem url  : https://adventofcode.com/2024/day/10
-interface Vector2D { x: number, y: number };
+
+function coordString(x: number, y: number) {
+	return `${x}-${y}`
+}
 
 async function p2024day10_part1(input: string, ...params: any[]) {
-	let grid = new Map<Vector2D, string>();
-	let towerMap = new Map<string, Vector2D[]>();
-	const lines = input.split('\n');
+	// square
+	// const n = input.indexOf('\n')
+	// log(params)
+	if (params && params[0]) {
+		log('~> skip test case')
+		return "Not implemented / SKIPPED";
+	}
 
-	const heigth = lines.length;
-	const width = lines[0].length;
+	const gridMap = new Map<string, number>();
+	const rows = input.split('\n');
 
-	for (let i = 0; i < heigth; i++) {
-		for (let j = 0; j < width; j++) {
-			const current = lines[i][j];
-			const coords: Vector2D = { x: i, y: j };
-			grid.set(coords, current);
-			if (current == '.') {
-				continue;
-			}
+	const headArr = []
 
-			const mapEntry = towerMap.get(current);
-			if (mapEntry) {
-				towerMap.set(current, [...mapEntry, coords]);
-			}
-			else {
-				towerMap.set(current, [coords]);
+	for (let i = 0; i < rows.length; i++) {
+		const row = rows[i];
+
+		for (let j = 0; j < row.length; j++) {
+			const current = row[j]
+			gridMap.set(coordString(i, j), Number(current))
+			if (current == '0') {
+				headArr.push([i, j])
 			}
 		}
 	}
+	// log(gridMap)
+	// log(headArr)
 
-	// log(towerMap)
-	// log(width, heigth)
-
-	function isInsideGrid(pos: Vector2D): boolean {
-		if (pos.x < 0 || pos.x >= heigth || pos.y < 0 || pos.y >= width) {
-			return false;
-		}
-		return true;
+	function areCoordsValid(x: number, y: number) {
+		return gridMap.has(coordString(x, y,))
 	}
+
+	function getCoord(x: number, y: number) {
+		return gridMap.get(coordString(x, y))
+	}
+
+	function setCoord(x: number, y: number, value: number) {
+		return gridMap.set(coordString(x, y), value)
+	}
+
+	const targetValue = 9;
+	const dxdy: number[][] = [[-1, 0], [1, 0], [0, 1], [0, -1]]
+
+	function search(i: number, j: number) {
+		const targetArr: string[] = [];
+
+		function searchTrails(i: number, j: number, currentValue: number) {
+			// log('searchTrails', i, j, currentValue)
+			if (!areCoordsValid(i, j)) {
+				// log('SearchTrails', '(', i, ',', j, ')', 'type:', 'INVALID COORDS')
+				return 0;
+			}
+			const value = getCoord(i, j)!; // must exist because valid coords
+			// log('SearchTrails', '(', i, ',', j, ')', 'value:', value)
+
+			if (value == targetValue) {
+				// target reached
+				targetArr.push(coordString(i, j));
+				return 1;
+			}
+
+			let trails = 0;
+			dxdy.forEach(([dx, dy]) => {
+				const newX = i + dx;
+				const newY = j + dy;
+				// log('dxdy', newX, newY)
+				if (areCoordsValid(newX, newY) && getCoord(newX, newY) === currentValue + 1) {
+					trails = trails + searchTrails(newX, newY, currentValue + 1);
+				}
+			})
+
+			return trails;
+		}
+
+		searchTrails(i, j, 0);
+
+		const targetSet = new Set(targetArr);
+
+		return targetSet;
+	}
+
+
+
+	// const tmp = search(headArr[0][0], headArr[0][1])
+	// log(tmp)
 
 	let score = 0;
+	headArr.forEach(h => {
+		const searchSet = search(h[0], h[1]);
+
+		score = score + searchSet.size
+	})
+
 
 	return score;
 }
@@ -68,7 +126,13 @@ async function run() {
 45678903
 32019012
 01329801
-10456732`, expected: "36"
+10456732`, expected: "36", extraArgs: [false]
+	},
+	{
+		input: `0123
+2234
+8765
+9876`, expected: "1", extraArgs: [false]
 	}];
 	const part2tests: TestCase[] = [];
 
@@ -90,14 +154,14 @@ async function run() {
 	const input = await util.getInput(DAY, YEAR);
 
 	const part1Before = performance.now();
-	// const part1Solution = String(await p2024day10_part1(input));
+	const part1Solution = String(await p2024day10_part1(input));
 	const part1After = performance.now();
 
 	const part2Before = performance.now()
 	const part2Solution = String(await p2024day10_part2(input));
 	const part2After = performance.now();
 
-	// logSolution(10, 2024, part1Solution, part2Solution);
+	logSolution(10, 2024, part1Solution, part2Solution);
 
 	log(chalk.gray("--- Performance ---"));
 	log(chalk.gray(`Part 1: ${util.formatTime(part1After - part1Before)}`));
