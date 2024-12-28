@@ -12,8 +12,62 @@ const DAY = 22;
 // data path    : E:\Projects\advent-of-code\years\2024\22\data.txt
 // problem url  : https://adventofcode.com/2024/day/22
 
+function nextSecretNumber(init: bigint): bigint {
+	let nextNumber: bigint = BigInt(0);
+
+	// 	
+	nextNumber = mix(init, init * BigInt(64))
+	nextNumber = prune(nextNumber)
+
+	// 
+	const tmp = nextNumber / BigInt(32);
+	nextNumber = mix(nextNumber, tmp)
+	nextNumber = prune(nextNumber)
+
+	// 
+	nextNumber = mix(nextNumber, nextNumber * BigInt(2048))
+	nextNumber = prune(nextNumber)
+
+	return nextNumber;
+}
+
+function prune(nr: bigint): bigint {
+	// log('prune', nr, nr % 16777216)
+	return nr % BigInt(16777216);
+}
+
+function mix(nr: bigint, other: bigint): bigint {
+	return nr ^ other;
+}
+
+function getPrice(nr: bigint): number {
+	const str = nr.toString()
+	return Number(str.charAt(str.length))
+}
+
+
+
 async function p2024day22_part1(input: string, ...params: any[]) {
-	return "Not implemented";
+	let split = input.split('\n').map(BigInt)
+	// split = [1, 10, 100, 2024].map(BigInt)
+
+	let score: bigint = BigInt(0);
+
+	split.forEach(n => {
+		let tmp = n;
+
+		for (let i = 2; i < 2000 + 2; i++) {
+			tmp = nextSecretNumber(tmp);
+			// log(i, secretTest)
+			// if (i == 1 || i == 10 || i == 100 || i == 2024) {
+			// log(i, secretTest)
+			// }
+		}
+
+		score = score + tmp;
+	})
+
+	return score;
 }
 
 async function p2024day22_part2(input: string, ...params: any[]) {
