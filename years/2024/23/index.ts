@@ -43,7 +43,7 @@ async function p2024day23_part1(input: string, ...params: any[]) {
 	// log(Object.keys(graph))
 
 	const computerList = Object.keys(graph)
-	log('Computers: ', computerList.length);
+	// log('Computers: ', computerList.length);
 
 	let foundTriples = new Set<string>();
 
@@ -73,7 +73,97 @@ async function p2024day23_part1(input: string, ...params: any[]) {
 }
 
 async function p2024day23_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	const split = input.split('\n')
+
+	let graph: AdjacencyGraph = {};
+
+	split.forEach(s => {
+		const [pc1, pc2] = s.split('-');
+
+		if (graph[pc1]) {
+			graph[pc1].add(pc2);
+		}
+		else {
+			graph[pc1] = new Set([pc2]);
+		}
+
+		if (graph[pc2]) {
+			graph[pc2].add(pc1);
+		}
+		else {
+			graph[pc2] = new Set([pc1]);
+		}
+	})
+
+	// log(graph)
+	// log(Object.keys(graph))
+
+	const computerList = Object.keys(graph)
+	// log('Computers: ', computerList.length);
+
+	let longestCircle = 0;
+	let longestCircleStr = '';
+
+	// works for the example and is quick, but veryy slow for the real input
+	{
+		// function visitNodes(startNode: string, currentNode: string, alreadyVisited: Set<string>) {
+		// 	// log('visitnodes', 'start:', startNode, ', current:', currentNode, ', alreadyVisited:', [...alreadyVisited])
+		// 	// if (startNode === currentNode) {
+		// 	// 	log('~> Circle End: ', startNode, currentNode)
+		// 	// 	return;
+		// 	// }
+
+		// 	const neighbors = graph[currentNode]
+		// 	// log('neighbors', neighbors)
+
+		// 	neighbors.forEach(n => {
+		// 		// log('check neighbor', n)
+		// 		if (n === startNode) {
+		// 			const nodes = [...alreadyVisited].sort()
+		// 			const nodeStr = nodes.join(',')
+		// 			// log('~> Circle End: ', startNode, currentNode, nodeStr)
+
+		// 			if (nodes.length > longestCircle) {
+		// 				log('~~~>>> NEW LONGEST', nodeStr)
+		// 				longestCircle = nodes.length;
+		// 				longestCircleStr = nodeStr;
+		// 			}
+		// 		}
+		// 		else if (!alreadyVisited.has(n)) {
+		// 			// only if not visited yet
+		// 			const nodes = graph[n]
+
+		// 			let arr = [...alreadyVisited]
+		// 			let hasAllVisited = true;
+
+		// 			for (let i = 0; i < arr.length; i++) {
+		// 				if (!nodes.has(arr[i])) {
+		// 					hasAllVisited = false;
+		// 				}
+		// 			}
+
+		// 			if (hasAllVisited) {
+		// 				arr.push(n)
+		// 				visitNodes(startNode, n, new Set([...arr]))
+		// 			}
+		// 		}
+		// 		else {
+		// 			// log('already visited', n)
+		// 		}
+		// 	})
+		// }
+
+		// computerList.forEach(c => {
+		// 	const neighbors = graph[c]
+		// 	log('-- New Computer:', c, neighbors)
+
+		// 	neighbors.forEach(n => {
+		// 		visitNodes(c, n, new Set([c]))
+		// 	})
+		// })
+	}
+
+	return longestCircleStr;
 }
 
 async function run() {
@@ -111,7 +201,40 @@ wh-qp
 tb-vc
 td-yn`, expected: "7"
 	}];
-	const part2tests: TestCase[] = [];
+	const part2tests: TestCase[] = [{
+		input: `kh-tc
+qp-kh
+de-cg
+ka-co
+yn-aq
+qp-ub
+cg-tb
+vc-aq
+tb-ka
+wh-tc
+yn-cg
+kh-ub
+ta-co
+de-co
+tc-td
+tb-wq
+wh-td
+ta-ka
+td-qp
+aq-cg
+wq-ub
+ub-vc
+de-ta
+wq-aq
+wq-vc
+wh-yn
+ka-de
+kh-ta
+co-tc
+wh-qp
+tb-vc
+td-yn`, expected: "co,de,ka,ta"
+	}];
 
 	// Run tests
 	test.beginTests();
