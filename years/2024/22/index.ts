@@ -42,10 +42,8 @@ function mix(nr: bigint, other: bigint): bigint {
 
 function getPrice(nr: bigint): number {
 	const str = nr.toString()
-	return Number(str.charAt(str.length))
+	return Number(str.charAt(str.length - 1))
 }
-
-
 
 async function p2024day22_part1(input: string, ...params: any[]) {
 	let split = input.split('\n').map(BigInt)
@@ -71,7 +69,88 @@ async function p2024day22_part1(input: string, ...params: any[]) {
 }
 
 async function p2024day22_part2(input: string, ...params: any[]) {
-	return "Not implemented";
+	// const arr = [BigInt(1), BigInt(2), BigInt(3), BigInt(2024)]
+	const arr = input.split('\n').map(BigInt)
+
+	const changesArr = arr.map(n => {
+		let tmp = n;
+		let price = getPrice(tmp);
+
+		let changes: [number, number][] = []
+		changes.push([price, 0])
+
+		for (let i = 2; i < 2000 + 2; i++) {
+			tmp = nextSecretNumber(tmp);
+			const newPrice = getPrice(tmp);
+			const change = newPrice - price;
+			price = newPrice;
+
+			changes.push([price, change])
+		}
+
+		return changes;
+	})
+
+	// log(changesArr[0])
+
+	let strSet = new Set<string>([]);
+
+	const profitsArr = changesArr.map(c => {
+		let profitMap = new Map<string, number>();
+
+		for (let i = 3; i < c.length; i++) {
+			const [price, change] = c[i];
+			const vals = c.slice(i - 3, i + 1)
+			const str = vals.map(v => v[1]).join(' | ')
+			// log(i, c[i], vals, str)
+			// log(i, ' ', price, ' ', str)
+
+			const oldProfit = profitMap.get(str);
+			strSet.add(str);
+
+			if (oldProfit) {
+				// Apes sell at the first option, and dont wait for the best :(
+				// if (price > oldProfit) {
+				// 	profitMap.set(str, price);
+				// }
+			}
+			else {
+				profitMap.set(str, price);
+				// strSet.add(str);
+			}
+		}
+
+		// log(profitMap)
+		return profitMap;
+	})
+
+	// log('strSet', strSet)
+	log('Different strings to test: ', strSet.size)
+
+	let maxProfit = -1;
+	let maxProfitStr = ''
+
+	strSet.forEach(s => {
+		let profit = 0;
+
+		profitsArr.forEach(p => {
+			const profitAtThatStr = p.get(s);
+			if (profitAtThatStr) {
+				profit = profit + profitAtThatStr
+			}
+		})
+
+		if (profit > maxProfit) {
+			log('~> NewMaxProfit!', s, ' = ', profit)
+
+			maxProfit = profit;
+			maxProfitStr = s;
+		}
+	})
+
+	log('--->>> ', maxProfitStr, ' = ', maxProfit)
+
+	return maxProfit;
 }
 
 async function run() {
