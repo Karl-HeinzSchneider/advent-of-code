@@ -163,6 +163,50 @@ async function p2024day23_part2(input: string, ...params: any[]) {
 		// })
 	}
 
+	// https://en.wikipedia.org/wiki/Bron%E2%80%93Kerbosch_algorithm	
+	function BK(R: Set<string>, P: Set<string>, X: Set<string>) {
+		// log('BK:', R, P, X)
+
+		if (P.size === 0 && X.size === 0) {
+			// output R
+			// log('MAX:', R)
+
+			if (R.size > longestCircle) {
+				longestCircle = R.size;
+				longestCircleStr = [...R].sort().join(',');
+				log('~> new max clique ', [...R].sort(), longestCircleStr);
+			}
+			return
+		}
+
+		P.forEach(v => {
+			const Nv = graph[v];
+
+			const R_u_v = new Set<string>([...R, v])
+
+			let P_n_Nv = new Set<string>()
+			P.forEach(p => {
+				if (Nv.has(p)) {
+					P_n_Nv.add(p);
+				}
+			})
+
+			let X_n_Nv = new Set<string>()
+			X.forEach(x => {
+				if (Nv.has(x)) {
+					X_n_Nv.add(x);
+				}
+			})
+
+			BK(R_u_v, P_n_Nv, X_n_Nv);
+
+			P.delete(v);
+			X.add(v);
+		})
+	}
+
+	BK(new Set<string>(), new Set<string>(computerList), new Set<string>())
+
 	return longestCircleStr;
 }
 
