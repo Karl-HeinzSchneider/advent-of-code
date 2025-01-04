@@ -193,48 +193,112 @@ async function p2024day17_part1(input: string, ...params: any[]) {
 	const outputStr = output.join(',')
 	log('====', outputStr)
 
+	// return testBigN(BigInt(A), BigInt(B), BigInt(C), program.map(x => BigInt(x)))
+
 	return outputStr;
 }
 
-async function p2024day17_part2(input: string, ...params: any[]) {
+function testBigN(a: bigint, b: bigint, c: bigint, program: bigint[]) {
+	let outputArr: bigint[] = [];
 
+	const programLen = program.length;
+
+	let pointer = 0;
+
+	while (pointer < programLen && pointer + 1 < programLen) {
+		log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+		const opcode = program[pointer];
+		const opcodeNumber = Number(opcode);
+		const operand = program[pointer + 1];
+		const operandNumber = Number(operand);
+		const combos = [BigInt(0), BigInt(1), BigInt(2), BigInt(3), a, b, c]
+
+		log('opcode', opcodeNumber, ' | operant', operandNumber, ' | combo', combos[operandNumber])
+		log('combos', combos)
+		log('output', outputArr)
+
+		let tmp: bigint;
+		switch (opcodeNumber) {
+			case 0:
+				tmp = a >> combos[opcodeNumber]
+				a = tmp
+				// log('aaaaaa', a)
+				break;
+			case 1:
+				b = b ^ BigInt(operand);
+				break;
+			case 2:
+				b = combos[operandNumber] % BigInt(8);
+				break;
+			case 3:
+				if (a === BigInt(0)) {
+					// do nothing
+				}
+				else {
+					pointer = operandNumber - 2
+				}
+				break;
+			case 4:
+				b = b ^ c;
+				break;
+			case 5:
+				tmp = combos[operandNumber] % BigInt(8)
+				// outputArr.push(tmp);
+				break;
+			case 6:
+				b = a >> combos[opcodeNumber]
+				break;
+			case 7:
+				c = a >> combos[opcodeNumber]
+				break;
+		}
+
+		pointer = pointer + 2;
+
+		log('...')
+		log('combos', [BigInt(0), BigInt(1), BigInt(2), BigInt(3), a, b, c])
+		log('output', outputArr)
+		log('~~~~~~~~~~~')
+	}
+
+	log('~~~>>> FINISHED? <<<~~~')
+
+	return outputArr.join(',')
+}
+
+async function p2024day17_part2(input: string, ...params: any[]) {
 	const split = input.split('\n');
 
-	const A_init = Number(split[0].split(':')[1]);
-	const B_init = Number(split[1].split(':')[1]);
-	const C_init = Number(split[2].split(':')[1]);
+	let A = BigInt(split[0].split(':')[1]);
+	let B = BigInt(split[1].split(':')[1]);
+	let C = BigInt(split[2].split(':')[1]);
 
-	const program = split[4].split(': ')[1].split(',').map(x => Number(x));
+	const program = split[4].split(': ')[1].split(',').map(x => BigInt(x));
 	const programLen = program.length;
-	const programStr = program.join(',')
-
-	let A = A_init
-	let B = B_init
-	let C = C_init
 
 	log('Register A:', A);
 	log('Register B:', B);
 	log('Register C:', C);
-	log('Program:', program, 'ProgramStr:', programStr);
-	log('')
+	log('Program:', program);
 
-	let output: number[] = [];
+	let output: bigint[] = [];
 
 	let instructionPointer = 0;
-	let literalOperant = 0;
-	let comboOperant = 0;
+	let literalOperant = BigInt(0);
+	let comboOperant = BigInt(0);
 
 	// 0 - a division
-	function adv(combo: number) {
+	function adv(combo: bigint) {
 		// log('..adv', combo)
-		let tmp = (A / Math.pow(2, combo));
-		tmp = Math.trunc(tmp)
+		// let tmp = (A / Math.pow(BigInt(2), BigInt(combo)));
+		let tmp = A >> combo;
+		// tmp = Math.trunc(tmp)
 		A = tmp;
 		// log('..adv', combo, 'tmp:', tmp)
 	}
 
 	// 1 - bitwise XOR
-	function bxl(literal: number) {
+	function bxl(literal: bigint) {
 		// log('..bxl', literal)
 
 		let tmp = B ^ literal;
@@ -243,28 +307,28 @@ async function p2024day17_part2(input: string, ...params: any[]) {
 	}
 
 	// 2 - mod 8
-	function bst(combo: number) {
+	function bst(combo: bigint) {
 		// log('..bst', combo)
-		let tmp = combo % 8;
+		let tmp = combo % BigInt(8);
 		B = tmp;
 		// log('..bst', combo, 'tmp:', tmp)
 	}
 
 	// 3 - jump
-	function jnz(literal: number) {
+	function jnz(literal: bigint) {
 		// log('..jnz', literal, 'A:', A)
 
-		if (A === 0) {
+		if (A === BigInt(0)) {
 			return false;
 		}
 		else {
-			instructionPointer = literal;
+			instructionPointer = Number(literal);
 			return true;
 		}
 	}
 
 	// 4 -
-	function bxc(operand: number) {
+	function bxc(operand: bigint) {
 		// log('..bxc', operand)
 		let tmp = B ^ C;
 		B = tmp;
@@ -273,166 +337,123 @@ async function p2024day17_part2(input: string, ...params: any[]) {
 	}
 
 	// 5 - output
-	function out(combo: number) {
+	function out(combo: bigint) {
 		// log('..out', combo)
-		let tmp = combo % 8;
+		let tmp = combo % BigInt(8);
 		output.push(tmp);
 		// log('~~>> OUT:', tmp)
 	}
 
 	// 6 - b division
-	function bdv(combo: number) {
+	function bdv(combo: bigint) {
 		// log('..bdv', combo)
-		let tmp = (A / Math.pow(2, combo));
-		tmp = Math.trunc(tmp)
+		// let tmp = (A / Math.pow(2, combo));
+		// tmp = Math.trunc(tmp)
+		let tmp = A >> combo;
 		B = tmp;
 		// log('..bdv', combo, 'tmp:', tmp)
 	}
 
 	// 7 - c division
-	function cdv(combo: number) {
+	function cdv(combo: bigint) {
 		// log('..cdv', combo)
-		let tmp = (A / Math.pow(2, combo));
-		tmp = Math.trunc(tmp)
+		// let tmp = (A / Math.pow(2, combo));
+		// tmp = Math.trunc(tmp)
+		let tmp = A >> combo;
 		C = tmp;
 		// log('..cdv', combo, 'tmp:', tmp)
 	}
 
-	function testN(n: number): string {
-		A = n
-		B = B_init
-		C = C_init
+	while (instructionPointer < programLen && instructionPointer + 1 < programLen) {
+		// log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+		const opcode = program[instructionPointer];
+		const operand = program[instructionPointer + 1];
+		const operandNumber = Number(operand);
 
-		instructionPointer = 0;
-		literalOperant = 0;
-		comboOperant = 0;
+		literalOperant = operand;
 
-		output = [];
+		let isJumping = false;
 
-		while (instructionPointer < programLen && instructionPointer + 1 < programLen) {
-			// log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-			const opcode = program[instructionPointer];
-			const operand = program[instructionPointer + 1];
-
-			literalOperant = operand;
-
-			let isJumping = false;
-
-			if (operand <= 3) {
-				comboOperant = operand;
-			}
-			else if (operand == 4) {
-				comboOperant = A
-			}
-			else if (operand == 5) {
-				comboOperant = B
-			}
-			else if (operand == 6) {
-				comboOperant = C
-			}
-			else if (operand == 7) {
-				// log('Register A:', A);
-				// log('Register B:', B);
-				// log('Register C:', C);
-				// log('opcode', opcode, 'operand', operand);
-				// log('literal', literalOperant, 'combo', comboOperant)
-				// log('~~~~~>>>> SHOULD NOT HAPPEN <<<<~~~~ 7')
-
-				// return;
-			}
-			else {
-				// log('Register A:', A);
-				// log('Register B:', B);
-				// log('Register C:', C);
-				// log('opcode', opcode, 'operand', operand);
-				// log('literal', literalOperant, 'combo', comboOperant)
-				// log('~~~~~>>>> SHOULD NOT HAPPEN <<<<~~~~ else')
-				// return;
-			}
-
-			// if (n === 117440) {
-			// 	log('Register A:', A);
-			// 	log('Register B:', B);
-			// 	log('Register C:', C);
-			// 	log('opcode', opcode, 'operand', operand);
-			// 	log('literal', literalOperant, 'combo', comboOperant)
-			// }
-
-
-			switch (opcode) {
-				case 0:
-					adv(comboOperant);
-					break;
-				case 1:
-					bxl(literalOperant);
-					break;
-				case 2:
-					bst(comboOperant);
-					break;
-				case 3:
-					isJumping = jnz(literalOperant);
-					break;
-				case 4:
-					bxc(-1);
-					break;
-				case 5:
-					out(comboOperant);
-					break;
-				case 6:
-					bdv(comboOperant);
-					break;
-				case 7:
-					cdv(comboOperant);
-					break;
-			}
-
-
-			if (isJumping) {
-				// set inside jnz
-			}
-			else {
-				instructionPointer = instructionPointer + 2
-			}
-
-			if (output.length > 0) {
-				const testStr = output.join(',')
-
-				if (!programStr.startsWith(testStr)) {
-					return testStr
-				}
-			}
+		if (operandNumber <= 3) {
+			comboOperant = operand;
 		}
-
-		const outputStr = output.join(',')
-		// log(n, '====', outputStr)
-		return outputStr;
-	}
-
-	// bruteforce, but solution is bigger than MAX_SAFE_INTEGER
-
-	let lowestA = 0;
-	const maxN = Number.MAX_SAFE_INTEGER
-	log('---Test till', maxN, '---')
-	for (let i = 0; i < maxN; i++) {
-
-		if (i % 10000000 == 0) {
-			log('....', i)
+		else if (operandNumber == 4) {
+			comboOperant = A
 		}
+		else if (operandNumber == 5) {
+			comboOperant = B
+		}
+		else if (operandNumber == 6) {
+			comboOperant = C
+		}
+		else if (operandNumber == 7) {
+			// log('Register A:', A);
+			// log('Register B:', B);
+			// log('Register C:', C);
+			// log('opcode', opcode, 'operand', operand);
+			// log('literal', literalOperant, 'combo', comboOperant)
+			// log('~~~~~>>>> SHOULD NOT HAPPEN <<<<~~~~ 7')
 
-		const outputStr = testN(i);
-
-		if (outputStr === programStr) {
-			log('~~>> FOUND:', i)
-			return i;
+			// return;
 		}
 		else {
-			// log('*INVALID*', i, outputStr)
+			// log('Register A:', A);
+			// log('Register B:', B);
+			// log('Register C:', C);
+			// log('opcode', opcode, 'operand', operand);
+			// log('literal', literalOperant, 'combo', comboOperant)
+			// log('~~~~~>>>> SHOULD NOT HAPPEN <<<<~~~~ else')
+			// return;
+		}
+
+		log('Register A:', A);
+		log('Register B:', B);
+		log('Register C:', C);
+		log('opcode', opcode, 'operand', operandNumber);
+		log('literal', literalOperant, 'combo', comboOperant)
+
+		switch (operandNumber) {
+			case 0:
+				adv(comboOperant);
+				break;
+			case 1:
+				bxl(literalOperant);
+				break;
+			case 2:
+				bst(comboOperant);
+				break;
+			case 3:
+				isJumping = jnz(literalOperant);
+				break;
+			case 4:
+				bxc(BigInt(-1));
+				break;
+			case 5:
+				out(comboOperant);
+				break;
+			case 6:
+				bdv(comboOperant);
+				break;
+			case 7:
+				cdv(comboOperant);
+				break;
+		}
+
+
+		if (isJumping) {
+			// set inside jnz
+		}
+		else {
+			instructionPointer = instructionPointer + 2
 		}
 	}
 
-	log('*** NOT FOUND :(( ***')
+	const outputStr = output.join(',')
+	log('====', outputStr)
 
-	return -1;
+	// return testBigN(BigInt(A), BigInt(B), BigInt(C), program.map(x => BigInt(x)))
+
+	return outputStr;
 }
 
 async function run() {
@@ -477,22 +498,22 @@ Program: 1,7`,
 		expected: ''
 	}];
 	const part2tests: TestCase[] = [
-		{
-			input: `Register A: 2024
-Register B: 0
-Register C: 0
+		// 		{
+		// 			input: `Register A: 2024
+		// Register B: 0
+		// Register C: 0
 
-Program: 0,3,5,4,3,0`, expected: "117440"
-		}
+		// Program: 0,3,5,4,3,0`, expected: "117440"
+		// 		}
 	];
 
 	// Run tests
 	test.beginTests();
-	await test.section(async () => {
-		for (const testCase of part1tests) {
-			test.logTestResult(testCase, String(await p2024day17_part1(testCase.input, ...(testCase.extraArgs || []))));
-		}
-	});
+	// await test.section(async () => {
+	// 	for (const testCase of part1tests) {
+	// 		test.logTestResult(testCase, String(await p2024day17_part1(testCase.input, ...(testCase.extraArgs || []))));
+	// 	}
+	// });
 	await test.section(async () => {
 		for (const testCase of part2tests) {
 			test.logTestResult(testCase, String(await p2024day17_part2(testCase.input, ...(testCase.extraArgs || []))));
@@ -504,14 +525,14 @@ Program: 0,3,5,4,3,0`, expected: "117440"
 	const input = await util.getInput(DAY, YEAR);
 
 	const part1Before = performance.now();
-	const part1Solution = String(await p2024day17_part1(input));
+	// const part1Solution = String(await p2024day17_part1(input));
 	const part1After = performance.now();
 
 	const part2Before = performance.now()
 	const part2Solution = String(await p2024day17_part2(input));
 	const part2After = performance.now();
 
-	logSolution(17, 2024, part1Solution, part2Solution);
+	// logSolution(17, 2024, part1Solution , part2Solution);
 
 	log(chalk.gray("--- Performance ---"));
 	log(chalk.gray(`Part 1: ${util.formatTime(part1After - part1Before)}`));
