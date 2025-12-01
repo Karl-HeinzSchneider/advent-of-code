@@ -13,7 +13,32 @@ const DAY = 1;
 // problem url  : https://adventofcode.com/2025/day/1
 
 async function p2025day1_part1(input: string, ...params: any[]) {
-	return "Not implemented";
+	const split = input.split('\n')
+
+	// console.log(split)
+
+	let dial = 50; // start at 50
+	let zeros = 0;
+
+	split.forEach(s => {
+		let sgn: number = 1;
+		if (s.startsWith('L')) {
+			sgn = -1;
+		}
+
+		let delta: number = Number(s.replace('L', '').replace('R', ''))
+		// console.log(s, sgn, delta)
+
+		dial = dial + sgn * delta;
+		dial = (dial + 100) % 100;
+		// console.log(s, sgn, delta, '==>>', dial)
+
+		if (dial == 0) {
+			zeros = zeros + 1;
+		}
+	})
+
+	return zeros;
 }
 
 async function p2025day1_part2(input: string, ...params: any[]) {
@@ -21,7 +46,18 @@ async function p2025day1_part2(input: string, ...params: any[]) {
 }
 
 async function run() {
-	const part1tests: TestCase[] = [];
+	const part1tests: TestCase[] = [{
+		input: `L68
+L30
+R48
+L5
+R60
+L55
+L1
+L99
+R14
+L82`, expected: "3"
+	}];
 	const part2tests: TestCase[] = [];
 
 	// Run tests
